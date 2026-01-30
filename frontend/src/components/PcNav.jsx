@@ -19,7 +19,7 @@ const PcNav = () => {
       { label: '대시보드', to: '/' },
       { label: '알림', to: '/alarm' },
       { label: '통계자료', to: '/stats' },
-      { label: '마이페이지', to: '/mypage' },
+      { label: '로그인', to: '/member/signin' },
     );
   } else return;
 
