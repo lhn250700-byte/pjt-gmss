@@ -46,4 +46,12 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long>{
       AND cr.cnsl_dt = :cnslDt
 """, nativeQuery = true)
 	List<CnslerDateDto> getReservedInfo(@Param("cnslerId") UUID cnslerId, @Param("cnslDt") LocalDate cnslDt);
+
+//	@Query(value= """
+//		select cnsl_dt
+//		from cnsl_reg
+//		where cnsler_id = :cnslerId
+//		and del_yn = 'N'
+//		and cnsl_stat = 'D'
+//	""", nativeQuery = true)
 }
