@@ -3,18 +3,18 @@ package com.study.spring.Cnsl.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.study.spring.Cnsl.dto.CnslerDateDto;
+import com.study.spring.Cnsl.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.study.spring.Cnsl.dto.CnslModiReqDto;
-import com.study.spring.Cnsl.dto.CnslReqDto;
-import com.study.spring.Cnsl.dto.IsCnslDto;
 import com.study.spring.Cnsl.entity.Cnsl_Reg;
 import com.study.spring.Cnsl.repository.CnslRepository;
 import com.study.spring.Member.entity.Member;
@@ -151,5 +151,42 @@ public class CnslService {
 		cnslRepository.save(cnsl_Reg);
 	}
 
+	// [상담사 월별 상담 건수]
+    public List<CnslDatePerMonthClassDto> findCounselingMonthlyCountByCounselor(UUID cnslerId) {
+		/*
+		* 1. 쿼리로 startMonth와 cnt를 가져온다.
+		* 2. 모든 것을 DB에 맡기는 것을 방지하기 위해 스프링에서 endMonth를 구한다.
+		* 3. 이때, 쿼리값을 가져오는 DTO는 interface기 때문에 class 형태의 Dto를 추가로 만들어 값을 저장한다.
+		* */
+		List<CnslDatePerMonthDto> results = cnslRepository.getCnslDatePerMonthList(cnslerId);
 
+		return results.stream().map(r -> {
+			LocalDate monthStart = r.getMonthStart();
+			LocalDate monthEnd = YearMonth.from(monthStart).atEndOfMonth();
+
+			return CnslDatePerMonthClassDto
+					.builder()
+					.monthStart(monthStart)
+					.monthEnd(monthEnd)
+					.totalCnt(r.getTotalCnt())
+					.reservedCnt(r.getReservedCnt())
+					.completedCnt(r.getCompletedCnt())
+					.build();
+		}).toList();
+	}
+
+	// [상담사 전체 건수]
+    public Optional<CnslSumDto> findCounselingTotalCountByCounselor(UUID cnslerId) {
+		return cnslRepository.getCnslTotalCount(cnslerId);
+    }
+
+	// [상담 내역(전체)]
+	public Page<?> findCounselingsByCounselor(Pageable pageable, UUID cnslerId) {
+		return cnslRepository.findCounselingsByCounselor(pageable, cnslerId);
+	}
+
+	// [상담 예약 관리(수락 전)]
+	public Page<?> findPendingReservations(Pageable pageable, UUID cnslerId) {
+		return cnslRepository.findPendingReservations(pageable, cnslerId);
+	}
 }
