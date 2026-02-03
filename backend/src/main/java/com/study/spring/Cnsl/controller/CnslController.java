@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.study.spring.Cnsl.dto.CnslerDateDto;
+import com.study.spring.Cnsl.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.study.spring.Cnsl.dto.CnslModiReqDto;
-import com.study.spring.Cnsl.dto.CnslReqDto;
-import com.study.spring.Cnsl.dto.IsCnslDto;
 import com.study.spring.Cnsl.repository.CnslRepository;
 import com.study.spring.Cnsl.service.CnslService;
 
@@ -85,9 +85,48 @@ public class CnslController {
 		
 	}
 
-	@GetMapping("/api/getCList/{cnslerId}")
-	public void getMyCounselingList() {
-		return cnslService.findCounselingsByCounselor();
+	// [상담사 월별 상담 건수]
+	@GetMapping("/api/counselSum/{cnslerId}/monthly")
+	public List<CnslDatePerMonthClassDto> getMyCounselingMonthlyCount(@PathVariable("cnslerId") UUID cnslerId) {
+		return cnslService.findCounselingMonthlyCountByCounselor(cnslerId);
+	}
+
+	// [상담사 전체 건수]
+	@GetMapping("/api/counselSum/{cnslerId}")
+	public Optional<CnslSumDto> getMyCounselingTotalCount(@PathVariable("cnslerId") UUID cnslerId) {
+		return cnslService.findCounselingTotalCountByCounselor(cnslerId);
+	}
+
+	// [상담 내역(전체)]
+	@GetMapping("/api/cnslList/{cnslerId}")
+	public ResponseEntity<Page<?>> getMyCounselingList(
+			@RequestParam(name="page", defaultValue = "0") int page,
+			@RequestParam(name="size", defaultValue = "10") int size,
+			@PathVariable("cnslerId") UUID cnslerId
+	) {
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<?> cnslPage = cnslService.findCounselingsByCounselor(pageable, cnslerId);
+		if (cnslPage.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.ok(cnslPage);
+	}
+
+	// [상담 예약 관리(수락 전)]
+	@GetMapping("/api/cnslRsvList/{cnslerId}")
+	public ResponseEntity<Page<?>> getPendingReservationList(
+			@RequestParam(name="page", defaultValue = "0") int page,
+			@RequestParam(name="size", defaultValue = "10") int size,
+			@PathVariable("cnslerId") UUID cnslerId
+	) {
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<?> rsvPage = cnslService.findPendingReservations(pageable, cnslerId);
+		if (rsvPage.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.ok(rsvPage);
 	}
 
 }
