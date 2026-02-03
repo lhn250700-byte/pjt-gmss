@@ -68,8 +68,8 @@ public class Cnsl_Reg {
     
     @Column(name="del_yn")
     private String delYn = "N";
-	
-	@CreationTimestamp
+
+    @Column(name = "created_at", insertable = false, updatable = false)
 	private LocalDateTime createdAt;
 	
 	@UpdateTimestamp

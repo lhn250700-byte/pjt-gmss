@@ -84,4 +84,10 @@ public class CnslController {
 		}
 		
 	}
+
+	@GetMapping("/api/getCList/{cnslerId}")
+	public void getMyCounselingList() {
+		return cnslService.findCounselingsByCounselor();
+	}
+
 }

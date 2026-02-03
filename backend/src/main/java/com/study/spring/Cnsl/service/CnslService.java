@@ -1,6 +1,7 @@
 package com.study.spring.Cnsl.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -98,10 +99,19 @@ public class CnslService {
 	// [상담 수정]
 	@Transactional
 	public Long modifyMyCounseling(Long cnslId, CnslModiReqDto cnslModiReqDto) {
-		Cnsl_Reg cnsl_Reg = cnslRepository.findById(cnslId).orElseThrow(() -> new IllegalArgumentException("예약된 상담이 없습니다."));
-		
+		// [cnslId 존재 여부 확인]
+		Cnsl_Reg cnsl_Reg = cnslRepository.findById(cnslId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상담입니다."));
+
+		// [상담 수정 가능 여부 확인 (status = A 아닐 때 or delYn = Y일 때 터짐]
 		if (!"A".equals(cnsl_Reg.getCnslStat()) || "Y".equals(cnsl_Reg.getDelYn())) throw new IllegalStateException("수정 불가능한 상담 상태입니다.");
-		
+
+		// [해당 상담사의 영업 시간 중 예약 가능한 시간]
+		// 아직 코드 미작성
+
+		// 상담 수정 가능 시간 유효성 체크]
+		// 환불 정책이 아직 정해지지 않아서 코드 미작성
+
+		// patch 작동 방식에 의해 null이면 기존 값 유지, null이 아니면 새로운 값 세팅
 		if (cnslModiReqDto.getCnsl_date() != null) {
 			cnsl_Reg.setCnslDt(cnslModiReqDto.getCnsl_date());
 		}
@@ -121,35 +131,24 @@ public class CnslService {
 		return cnslId;
 	}
 
-	/*
-	* cnslId 존재 여부 확인
-
-		수정 요청 권한 체크 (회원/상담사/관리자)
-
-		상담사 중복 예약 체크
-
-		상담 상태 변경 제한 (완료 상담 수정 불가)
-
-		삭제 상태 체크 (delYn='Y')
-
-		날짜 및 시간 유효성
-
-		필드 값 유효성 (상담 유형, 카테고리, 진행 여부, 삭제 여부 등)
-
-		선택 필드 길이 제한
-
-		updatedAt 자동 업데이트
-	* */
-
 	// [상담 취소]
 	public void removeMyCounseling(Long cnslId) {
 		Cnsl_Reg cnsl_Reg = cnslRepository.findById(cnslId).orElseThrow(() -> new IllegalArgumentException("예약된 상담이 없습니다."));
-		// !cnsl_Reg.getMemberId().equals(현재 로그인한 member_id) throw new AccesException ~  
+		// !cnsl_Reg.getMemberId().equals(현재 로그인한 member_id) throw new AccesException ~
+		// [상담 취소 가능 여부]
 		if (!"A".equals(cnsl_Reg.getCnslStat())) throw new IllegalStateException("삭제 불가능한 상담 상태입니다.");
+		// [취소 되어 있는지 확인]
+		if ("Y".equals(cnsl_Reg.getDelYn())) throw new IllegalStateException("이미 취소된 상담입니다.");
+		// [취소 가능 시간 제한]
+		LocalDateTime counselStartAt = LocalDateTime.of(cnsl_Reg.getCnslDt(), cnsl_Reg.getCnslStartTime());
+		LocalDateTime cancelDeadline = counselStartAt.minusDays(1);
+		LocalDateTime now = LocalDateTime.now();
+
+		if (now.isAfter(cancelDeadline)) throw new IllegalStateException("상담 시작 1일 전까지만 취소 가능합니다.");
 		
 		cnsl_Reg.setDelYn("Y");
+		cnsl_Reg.setCnslStat("X");
 		cnslRepository.save(cnsl_Reg);
-		
 	}
 
 
