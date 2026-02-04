@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.study.spring.Cnsl.entity.CounselingStatus;
 import com.study.spring.Cnsl.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -97,32 +98,34 @@ public class CnslController {
 		return cnslService.findCounselingTotalCountByCounselor(cnslerId);
 	}
 
-	// [상담 내역(전체)]
+	// [상담 내역(전체) 조건 없음]
 	@GetMapping("/api/cnslList/{cnslerId}")
-	public ResponseEntity<Page<?>> getMyCounselingList(
+	public ResponseEntity<Page<cnslListDto>> getMyCounselingList(
+			@RequestParam(name="status", required = false) CounselingStatus status,
 			@RequestParam(name="page", defaultValue = "0") int page,
 			@RequestParam(name="size", defaultValue = "10") int size,
 			@PathVariable("cnslerId") UUID cnslerId
 	) {
 		Pageable pageable = PageRequest.of(page, size);
 
-		Page<?> cnslPage = cnslService.findCounselingsByCounselor(pageable, cnslerId);
+		Page<cnslListDto> cnslPage = cnslService.findCounselingsByCounselor(status, pageable, cnslerId);
 		if (cnslPage.isEmpty()) {
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.ok(cnslPage);
 	}
 
+
 	// [상담 예약 관리(수락 전)]
 	@GetMapping("/api/cnslRsvList/{cnslerId}")
-	public ResponseEntity<Page<?>> getPendingReservationList(
+	public ResponseEntity<Page<cnslListWithoutStatusDto>> getPendingReservationList(
 			@RequestParam(name="page", defaultValue = "0") int page,
 			@RequestParam(name="size", defaultValue = "10") int size,
 			@PathVariable("cnslerId") UUID cnslerId
 	) {
 		Pageable pageable = PageRequest.of(page, size);
 
-		Page<?> rsvPage = cnslService.findPendingReservations(pageable, cnslerId);
+		Page<cnslListWithoutStatusDto> rsvPage = cnslService.findPendingReservations(pageable, cnslerId);
 		if (rsvPage.isEmpty()) {
 			return ResponseEntity.noContent().build();
 		}
