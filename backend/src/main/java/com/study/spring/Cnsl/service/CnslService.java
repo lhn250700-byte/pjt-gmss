@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.study.spring.Cnsl.entity.CounselingStatus;
 import com.study.spring.Cnsl.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -181,12 +182,13 @@ public class CnslService {
     }
 
 	// [상담 내역(전체)]
-	public Page<?> findCounselingsByCounselor(Pageable pageable, UUID cnslerId) {
-		return cnslRepository.findCounselingsByCounselor(pageable, cnslerId);
+	public Page<cnslListDto> findCounselingsByCounselor(CounselingStatus status, Pageable pageable, UUID cnslerId) {
+		String stat = status == null ? null : status.name();
+		return cnslRepository.findCounselingsByCounselor(stat, pageable, cnslerId);
 	}
 
 	// [상담 예약 관리(수락 전)]
-	public Page<?> findPendingReservations(Pageable pageable, UUID cnslerId) {
+	public Page<cnslListWithoutStatusDto> findPendingReservations(Pageable pageable, UUID cnslerId) {
 		return cnslRepository.findPendingReservations(pageable, cnslerId);
 	}
 }
