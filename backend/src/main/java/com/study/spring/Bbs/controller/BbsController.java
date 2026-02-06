@@ -22,7 +22,7 @@ public class BbsController {
 
     // [주간 인기글]
     @GetMapping("/posts/popular/weekly")
-    public List<PopularPostDto> getWeeklyPopularPosts (){
+    public List<PopularPostClassDto> getWeeklyPopularPosts (){
         return bbsService.findWeeklyPopularPosts();
     }
 
