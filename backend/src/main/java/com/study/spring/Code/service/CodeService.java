@@ -1,7 +1,7 @@
-package com.study.spring.Code.service;
+package com.study.spring.code.service;
 
-import com.study.spring.Code.dto.CodeDto;
-import com.study.spring.Code.repository.CodeRepository;
+import com.study.spring.code.dto.CodeDto;
+import com.study.spring.code.repository.CodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

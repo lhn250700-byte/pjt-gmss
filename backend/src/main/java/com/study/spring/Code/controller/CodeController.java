@@ -1,4 +1,4 @@
-package com.study.spring.Code.controller;
+package com.study.spring.code.controller;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.study.spring.Code.dto.CodeDto;
-import com.study.spring.Code.service.CodeService;
+import com.study.spring.code.dto.CodeDto;
+import com.study.spring.code.service.CodeService;
 
 @RestController
 public class CodeController {

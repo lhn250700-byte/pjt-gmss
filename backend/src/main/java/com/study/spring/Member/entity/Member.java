@@ -1,11 +1,14 @@
-package com.study.spring.Member.entity;
+package com.study.spring.member.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -14,20 +17,26 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
-//@Table(name = "\"user\"")
 @Table(name = "member", schema = "public")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude="memberRoleList")
 public class Member {
 	@Id
-	@Column(name = "member_id", columnDefinition ="UUID") 
-	private UUID memberId; // (UUID)
+	@Column(name = "member_id") 
+	private String memberId; // email
+	private String pw;       // 비밀번호
+	private boolean social;
 	
-	private String role; // 1. 상담자, 2. 상담사, 3. 관리자 (Code 테이블 'role' 매핑 )
+	@ElementCollection(fetch=FetchType.LAZY)
+	@Builder.Default
+	private List<MemberRole> memberRoleList = new ArrayList<>();
+	//private String role; // 1. 상담자, 2. 상담사, 3. 관리자 (Code 테이블 'role' 매핑 )
 
 	// nullable=false → 무조건 값 있어야 함
 	@Column(nullable = false, unique = true)
@@ -51,5 +60,24 @@ public class Member {
 	@PreUpdate
 	public void onUpdate() {
 		this.updatedAt = LocalDateTime.now();
+	}
+	
+	public void addRole(MemberRole memberRole) {
+		memberRoleList.add(memberRole);
+	}
+	public void clearRole() {
+		memberRoleList.clear();
+	}
+
+	public void changePw(String pw) {
+		this.pw = pw;
+	}
+
+	public void changeNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public void changeSocial(boolean social) {
+		this.social = social;
 	}
 }

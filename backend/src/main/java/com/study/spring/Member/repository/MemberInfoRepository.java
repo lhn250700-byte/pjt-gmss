@@ -1,8 +1,9 @@
-package com.study.spring.Member.repository;
+package com.study.spring.member.repository;
 
-import com.study.spring.Member.dto.MemberInfoEmailCheckDTO;
-import com.study.spring.Member.dto.MemberInfoNicknameCheckDTO;
-import com.study.spring.Member.entity.AuthUser; // 엔티티 임포트
+import com.study.spring.member.dto.MemberInfoEmailCheckDTO;
+import com.study.spring.member.dto.MemberInfoNicknameCheckDTO;
+import com.study.spring.member.entity.Member;
+
 import org.springframework.data.jpa.repository.JpaRepository; // JpaRepository 사용 가능
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,12 +11,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface MemberInfoRepository extends JpaRepository<AuthUser, UUID> {
+public interface MemberInfoRepository extends JpaRepository<Member, String> {
 
     // DTO 인터페이스를 반환 타입으로 지정
     @Query(value = """
             SELECT CASE WHEN COUNT(*) > 0 THEN 'Y' ELSE 'N' END AS userInfoEmailCheckYn
-            FROM auth.users
+            FROM member
             WHERE email = :email
             """,
             nativeQuery = true)
