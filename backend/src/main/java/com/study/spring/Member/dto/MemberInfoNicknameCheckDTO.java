@@ -1,4 +1,4 @@
-package com.study.spring.Member.dto;
+package com.study.spring.member.dto;
 
 public interface MemberInfoNicknameCheckDTO {
     String getUserInfoNicknameCheckYn();         

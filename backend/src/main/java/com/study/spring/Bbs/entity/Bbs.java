@@ -1,4 +1,4 @@
-package com.study.spring.Bbs.entity;
+package com.study.spring.bbs.entity;
 
 import java.time.LocalDateTime;
 import java.util.Map;
