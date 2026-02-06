@@ -29,8 +29,6 @@ import com.study.spring.Cnsl.service.CnslService;
 public class CnslController {
 	@Autowired
 	CnslService cnslService;
-	@Autowired
-	CnslRepository cnslRepository;
 
 	@PostMapping("/api/reserve")
 	public ResponseEntity<?> createCounselingReservation(@RequestBody CnslReqDto cnslReqDto) {
@@ -63,7 +61,7 @@ public class CnslController {
 	
 	@PatchMapping("/api/reserve/{cnslId}")
 	public ResponseEntity<?> updateMyCounseling(
-		@PathVariable("cnslId") Long cnslId,
+            @PathVariable Long cnslId,
         @RequestBody CnslModiReqDto cnslModiReqDto
 	) {
 		try {
@@ -76,7 +74,7 @@ public class CnslController {
 	}
 	
 	@PutMapping("/api/cancel/{cnslId}")
-	public ResponseEntity<?> cancelMyCounseling(@PathVariable("cnslId") Long cnslId) {
+	public ResponseEntity<?> cancelMyCounseling(@PathVariable Long cnslId) {
 		try {
 			cnslService.removeMyCounseling(cnslId);
 			return ResponseEntity.ok("삭제 성공");
@@ -88,13 +86,13 @@ public class CnslController {
 
 	// [상담사 월별 상담 건수]
 	@GetMapping("/api/counselSum/{cnslerId}/monthly")
-	public List<CnslDatePerMonthClassDto> getMyCounselingMonthlyCount(@PathVariable("cnslerId") UUID cnslerId) {
+	public List<CnslDatePerMonthClassDto> getMyCounselingMonthlyCount(@PathVariable UUID cnslerId) {
 		return cnslService.findCounselingMonthlyCountByCounselor(cnslerId);
 	}
 
 	// [상담사 전체 건수]
 	@GetMapping("/api/counselSum/{cnslerId}")
-	public Optional<CnslSumDto> getMyCounselingTotalCount(@PathVariable("cnslerId") UUID cnslerId) {
+	public Optional<CnslSumDto> getMyCounselingTotalCount(@PathVariable UUID cnslerId) {
 		return cnslService.findCounselingTotalCountByCounselor(cnslerId);
 	}
 
@@ -104,7 +102,7 @@ public class CnslController {
 			@RequestParam(name="status", required = false) CounselingStatus status,
 			@RequestParam(name="page", defaultValue = "0") int page,
 			@RequestParam(name="size", defaultValue = "10") int size,
-			@PathVariable("cnslerId") UUID cnslerId
+            @PathVariable UUID cnslerId
 	) {
 		Pageable pageable = PageRequest.of(page, size);
 
@@ -121,7 +119,7 @@ public class CnslController {
 	public ResponseEntity<Page<cnslListWithoutStatusDto>> getPendingReservationList(
 			@RequestParam(name="page", defaultValue = "0") int page,
 			@RequestParam(name="size", defaultValue = "10") int size,
-			@PathVariable("cnslerId") UUID cnslerId
+            @PathVariable UUID cnslerId
 	) {
 		Pageable pageable = PageRequest.of(page, size);
 
@@ -131,5 +129,4 @@ public class CnslController {
 		}
 		return ResponseEntity.ok(rsvPage);
 	}
-
 }
