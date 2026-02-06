@@ -47,25 +47,25 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
     List<CnslerDateDto> getReservedInfo(@Param("cnslerId") UUID cnslerId, @Param("cnslDt") LocalDate cnslDt);
 
     @Query(value = """
-            	select
-            		date_trunc('month', cr.cnsl_dt)::date AS month_start,
-            		COUNT(*) AS total_cnt,
-            		COUNT(*) FILTER (WHERE cr.cnsl_stat = 'A') AS reserved_cnt,
-            		COUNT(*) FILTER (WHERE cr.cnsl_stat = 'D') AS completed_cnt
-            	from cnsl_reg cr
-            	where cr.cnsler_id = :cnslerId
-            	and cr.del_yn = 'N'
-            	and cr.cnsl_stat in ('A', 'D')
-            	group by month_start
-            	order by month_start desc
+            select
+             date_trunc('month', cr.cnsl_dt)::date AS month_start,
+             COUNT(*) AS total_cnt,
+             sum(case when cr.cnsl_stat = 'A' then 1 else 0 end) reserved_cnt,
+             sum(case when cr.cnsl_stat = 'D' then 1 else 0 end) completed_cnt
+             from cnsl_reg cr
+             where cr.cnsler_id = :cnslerId
+             and coalesce(cr.del_yn, 'N') = 'N'
+             and cr.cnsl_stat in ('A', 'D')
+             group by month_start
+             order by month_start desc
             """, nativeQuery = true)
     List<CnslDatePerMonthDto> getCnslDatePerMonthList(@Param("cnslerId") UUID cnslerId);
 
     @Query(value = """
             	select
-            		count(*) as total_cnt,
-            		count(*) filter (where cr.cnsl_stat = 'A') as reserved_cnt,
-            		count(*) filter (where cr.cnsl_stat = 'D') as completed_cnt
+                count(*) as total_cnt,
+                sum(case when cr.cnsl_stat = 'A' then 1 else 0 end) reserved_cnt,
+                sum(case when cr.cnsl_stat = 'D' then 1 else 0 end) completed_cnt
             	from cnsl_reg cr
             	WHERE cr.cnsler_id = :cnslerId
             	and cr.del_yn = 'N'

@@ -19,7 +19,7 @@ public class BbsService {
 
     // [실시간 인기글]
     public List<PopularPostClassDto> findRealtimePopularPosts() {
-        List<PopularPostDto> results = bbsRepository.findRealtimePopularPosts();
+        List<PopularPostDto> results = bbsRepository.findPopularPosts();
         return results.stream().map(r -> PopularPostClassDto
                 .builder()
                 .bbsId(r.getBbsId())
@@ -30,7 +30,7 @@ public class BbsService {
                 .bbsLikeCount(r.getBbsLikeCount())
                 .bbsDislikeCount(r.getBbsDisLikeCount())
                 .cmtLikeCount(r.getCmtLikeCount())
-                .cmtDislikeCount(r.getCmtLikeCount())
+                .cmtDislikeCount(r.getCmtDisLikeCount())
                 .createdAt(r.getCreatedAt())
                 .postScore(calculateRealtimeScore(r))
                 .build()).toList();
@@ -38,7 +38,7 @@ public class BbsService {
 
     public Double calculateRealtimeScore(PopularPostDto popularPostDto) {
         //score = (조회수 * 1) + (댓글 수 * 3) + (게시글 좋아요 수 * 5) + (댓글 좋아요 수 * 1.5) - (게시글 싫어요 * 6) - (댓글 싫어요 * 2) / (경과시간 + 1)^α(1.0, 1.2 ~ 1.5)
-        Duration duration = Duration.between(LocalDateTime.now(), popularPostDto.getCreatedAt());
+        Duration duration = Duration.between(popularPostDto.getCreatedAt(), LocalDateTime.now());
         Double time = duration.getSeconds() / 3600.0;
         Double timeScore = Math.pow(time + 1, 1.2);
         Double score = (popularPostDto.getViews() + (popularPostDto.getCommentCount() * 3) + (popularPostDto.getBbsLikeCount() * 5) + (popularPostDto.getCmtLikeCount() * 1.5) - (popularPostDto.getBbsDisLikeCount() * 6) - (popularPostDto.getCmtDisLikeCount()* 2)) / timeScore;
@@ -47,14 +47,27 @@ public class BbsService {
     }
 
     // [주간 인기글]
-    public List<PopularPostDto> findWeeklyPopularPosts() {
-
-        return null;
+    public List<PopularPostClassDto> findWeeklyPopularPosts() {
+        List<PopularPostDto> results = bbsRepository.findPopularPosts();
+        return results.stream().map(r -> PopularPostClassDto
+                .builder()
+                .bbsId(r.getBbsId())
+                .title(r.getTitle())
+                .content(r.getContent())
+                .views(r.getViews())
+                .commentCount(r.getCommentCount())
+                .bbsLikeCount(r.getBbsLikeCount())
+                .bbsDislikeCount(r.getBbsDisLikeCount())
+                .cmtLikeCount(r.getCmtLikeCount())
+                .cmtDislikeCount(r.getCmtDisLikeCount())
+                .createdAt(r.getCreatedAt())
+                .postScore(calculateWeeklyScore(r))
+                .build()).toList();
     }
 
-    public double calculateWeeklyScore(Integer views, Integer cmtCount, Integer bbsLikeCount, Integer bbsUnLikeCount, Integer cmtLikeCount, Integer cmtUnLikeCount) {
+    public Double calculateWeeklyScore(PopularPostDto popularPostDto) {
         // weekly_score = (주간 조회수 * 1) + (주간 댓글 수 * 2) + (주간 게시글 좋아요 수 * 3) + (주간 댓글 좋아요 수 * 1) - (주간 게시글 싫어요 수 * 4) - (주간 댓글 싫어요 * 1.5)
-        double score = views + (cmtCount * 2) + (bbsLikeCount * 3) + cmtLikeCount - (bbsUnLikeCount * 4) - (cmtUnLikeCount * 1.5);
+        Double score = popularPostDto.getViews() + (popularPostDto.getCommentCount() * 2) + (popularPostDto.getBbsLikeCount() * 3) + popularPostDto.getCmtLikeCount() - (popularPostDto.getBbsDisLikeCount() * 4) - (popularPostDto.getCmtDisLikeCount() * 1.5);
 
         return score;
     }

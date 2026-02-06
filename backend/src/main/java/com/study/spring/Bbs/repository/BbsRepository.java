@@ -30,6 +30,6 @@ public interface BbsRepository extends JpaRepository<Bbs, UUID> {
         group by b.bbs_id, b.title, b.content, b.views, b.created_at
         order by b.bbs_id
     """, nativeQuery = true)
-    List<PopularPostDto> findRealtimePopularPosts();
+    List<PopularPostDto> findPopularPosts();
 
 }
