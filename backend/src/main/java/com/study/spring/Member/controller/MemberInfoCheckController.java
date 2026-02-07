@@ -1,4 +1,4 @@
-package com.study.spring.Member.controller;
+package com.study.spring.member.controller;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.study.spring.Member.dto.MemberInfoEmailCheckDTO;
-import com.study.spring.Member.dto.MemberInfoNicknameCheckDTO;
-import com.study.spring.Member.repository.MemberInfoRepository;
+import com.study.spring.member.dto.MemberInfoEmailCheckDTO;
+import com.study.spring.member.dto.MemberInfoNicknameCheckDTO;
+import com.study.spring.member.repository.MemberInfoRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
