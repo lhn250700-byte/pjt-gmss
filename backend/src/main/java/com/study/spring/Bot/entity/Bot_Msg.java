@@ -49,7 +49,8 @@ public class Bot_Msg {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> msg_data;
-	
+
+	private String summary;
 	
 	@CreationTimestamp
 	private LocalDateTime created_at;

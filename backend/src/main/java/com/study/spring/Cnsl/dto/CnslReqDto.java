@@ -2,7 +2,7 @@ package com.study.spring.Cnsl.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.UUID;
+import java.lang.String;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 public class CnslReqDto {
 	private String cnsl_cate;
 	private String cnsl_tp;
-	private UUID member_id;
-	private UUID cnsler_id;
+	private String member_id;
+	private String cnsler_id;
 	private String cnsl_title;
 	private String cnsl_content;
 	private LocalDate cnsl_date;

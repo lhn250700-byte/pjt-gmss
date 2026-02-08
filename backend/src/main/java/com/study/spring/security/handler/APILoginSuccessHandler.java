@@ -8,7 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import com.google.gson.Gson;
-import com.study.spring.member.dto.MemberDto;
+import com.study.spring.Member.dto.MemberDto;
 import com.study.spring.util.JWTUtil;
 
 import jakarta.servlet.ServletException;

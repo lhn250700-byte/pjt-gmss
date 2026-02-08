@@ -1,6 +1,5 @@
-package com.study.spring.member.controller;
+package com.study.spring.Member.controller;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

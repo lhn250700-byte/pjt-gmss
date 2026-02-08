@@ -1,7 +1,7 @@
-package com.study.spring.code.repository;
+package com.study.spring.Code.repository;
 
-import com.study.spring.code.entity.Code;
-import com.study.spring.code.dto.CodeDto; // 방금 만드신 인터페이스
+import com.study.spring.Code.entity.Code;
+import com.study.spring.Code.dto.CodeDto; // 방금 만드신 인터페이스
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

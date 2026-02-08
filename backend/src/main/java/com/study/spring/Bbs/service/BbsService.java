@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -33,7 +34,11 @@ public class BbsService {
                 .cmtDislikeCount(r.getCmtDisLikeCount())
                 .createdAt(r.getCreatedAt())
                 .postScore(calculateRealtimeScore(r))
-                .build()).toList();
+                .build())
+                .sorted(Comparator.comparing(PopularPostClassDto::getPostScore).reversed()
+                        .thenComparing(PopularPostClassDto::getCreatedAt, Comparator.reverseOrder()))
+                .limit(10)
+                .toList();
     }
 
     public Double calculateRealtimeScore(PopularPostDto popularPostDto) {
@@ -62,7 +67,11 @@ public class BbsService {
                 .cmtDislikeCount(r.getCmtDisLikeCount())
                 .createdAt(r.getCreatedAt())
                 .postScore(calculateWeeklyScore(r))
-                .build()).toList();
+                .build())
+                .sorted(Comparator.comparing(PopularPostClassDto::getPostScore).reversed()
+                        .thenComparing(PopularPostClassDto::getCreatedAt, Comparator.reverseOrder()))
+                .limit(10)
+                .toList();
     }
 
     public Double calculateWeeklyScore(PopularPostDto popularPostDto) {

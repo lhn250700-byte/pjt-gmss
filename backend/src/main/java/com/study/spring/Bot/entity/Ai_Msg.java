@@ -42,6 +42,8 @@ public class Ai_Msg {
 	@JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "msg_data", columnDefinition = "jsonb")
     private Map<String, Object> msgData;
+
+	private String summary;
 	
 	@CreationTimestamp
 	private LocalDateTime createdAt;

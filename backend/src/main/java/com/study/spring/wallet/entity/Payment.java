@@ -1,12 +1,13 @@
 package com.study.spring.wallet.entity;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.study.spring.member.entity.Member;
+import com.study.spring.Member.entity.Member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,8 +24,8 @@ import lombok.Data;
 @Entity
 @Table(name = "payment")
 @Data
-//@NoArgsConstructor
-//@AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Payment {
 	@Id
@@ -41,7 +42,11 @@ public class Payment {
 	
 	private Long amount;
 	private String status;
-	
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="history_id", nullable = false)
+	private PointHistory historyId;
+
 	@CreationTimestamp
 	private LocalDateTime createdAt;
 	@UpdateTimestamp	

@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "bbs_comment")
@@ -44,8 +45,10 @@ public class Bbs_Comment {
 
 	private String content;
 	@Column(name="del_yn")
-	private String delYn;
+	private String delYn = "N";
 	
 	@CreationTimestamp
 	private LocalDateTime created_at;
+    @UpdateTimestamp
+    private LocalDateTime updated_at;
 }

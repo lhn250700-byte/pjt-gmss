@@ -1,9 +1,10 @@
 package com.study.spring.Cnsl.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.lang.String;
 
 import com.study.spring.Cnsl.entity.CounselingStatus;
 import com.study.spring.Cnsl.dto.*;
@@ -26,25 +27,33 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
             	WHERE cr.member_id = :memberId 
             	AND cr.cnsler_id = :cnslerId 
             	AND cr.cnsl_stat IN ('A','C')
-            	AND cr.cnsl_dt = :cnsl_date
-            
+            	AND cr.cnsl_dt = :cnslDt
             """, nativeQuery = true)
-    Optional<IsCnslDto> isCounseling(@Param("memberId") UUID memberId, @Param("cnslerId") UUID cnslerId, @Param("cnslDt") LocalDate cnsl_date);
+    Optional<IsCnslDto> isCounseling(@Param("memberId") String memberId, @Param("cnslerId") String cnslerId, @Param("cnslDt") LocalDate cnslDt);
 
+    @Query(value = """
+            select case when count(*) > 0 then 'Y' else 'N' as isCnslYn
+            from cnsl_reg
+            where cnsler_id = :cnslerId
+            and del_yn = 'N'
+            and cnsl_stat in ('B', 'C')
+            and cnsl_dt = :cnslDt and cnsl_start_time = :cnslStartTime
+            """, nativeQuery = true)
+    Optional<IsCnslv2Dto> isCnsl(@Param("cnslerId") String cnslerId, @Param("cnslDt") LocalDate cnslDt, @Param("cnslStartTime") LocalTime cnslStartTime);
 
     @Query(value = """
                 SELECT
-                       cr.cnsl_dt AS cnslDt, 
-                       cr.cnsl_start_time AS cnslStartTime, 
-                       m.nickname AS nickname
+               cr.cnsl_dt AS cnslDt, 
+               cr.cnsl_start_time AS cnslStartTime, 
+               m.nickname AS nickname
                 FROM cnsl_reg cr
                 JOIN member m ON cr.member_id = m.member_id
                 WHERE cr.del_yn = 'N'
-                  AND cr.cnsl_stat != 'D'
+                  AND cr.cnsl_stat != 'D'      
                   AND cr.cnsler_id = :cnslerId
                   AND cr.cnsl_dt = :cnslDt
             """, nativeQuery = true)
-    List<CnslerDateDto> getReservedInfo(@Param("cnslerId") UUID cnslerId, @Param("cnslDt") LocalDate cnslDt);
+    List<CnslerDateDto> getReservedInfo(@Param("cnslerId") String cnslerId, @Param("cnslDt") LocalDate cnslDt);
 
     @Query(value = """
             select
@@ -59,7 +68,7 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
              group by month_start
              order by month_start desc
             """, nativeQuery = true)
-    List<CnslDatePerMonthDto> getCnslDatePerMonthList(@Param("cnslerId") UUID cnslerId);
+    List<CnslDatePerMonthDto> getCnslDatePerMonthList(@Param("cnslerId") String cnslerId);
 
     @Query(value = """
             	select
@@ -70,7 +79,7 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
             	WHERE cr.cnsler_id = :cnslerId
             	and cr.del_yn = 'N'
             """, nativeQuery = true)
-    Optional<CnslSumDto> getCnslTotalCount(@Param("cnslerId") UUID cnslerId);
+    Optional<CnslSumDto> getCnslTotalCount(@Param("cnslerId") String cnslerId);
 
     // [상담 내역 전체]
     @Query(value = """
@@ -101,7 +110,7 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
               and (cr.cnsl_stat is null or cr.cnsl_stat = :status
               ) 
             """, nativeQuery = true)
-    Page<cnslListDto> findCounselingsByCounselor(@Param("status") String status, Pageable pageable, @Param("cnslerId") UUID cnslerId);
+    Page<cnslListDto> findCounselingsByCounselor(@Param("status") String status, Pageable pageable, @Param("cnslerId") String cnslerId);
 
     // [상담 예약 관리(수락 전)]
     @Query(value = """
@@ -120,5 +129,5 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
              where cr.del_yn = 'N'
              and cr.cnsl_stat = 'A'
             """, nativeQuery = true)
-    Page<cnslListWithoutStatusDto> findPendingReservations(Pageable pageable, @Param("cnslerId") UUID cnslerId);
+    Page<cnslListWithoutStatusDto> findPendingReservations(Pageable pageable, @Param("cnslerId") String cnslerId);
 }

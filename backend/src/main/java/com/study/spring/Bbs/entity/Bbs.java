@@ -1,19 +1,15 @@
-package com.study.spring.bbs.entity;
+package com.study.spring.Bbs.entity;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import com.study.spring.Member.entity.Member;
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,17 +29,21 @@ public class Bbs {
 
 	@Column(nullable = false)
     private String bbs_div; // (Code 테이블 'bbs_div' 매핑)
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id", nullable = false)
+	private Member memberId;
 	
 	private String mbti;
 	private String title;
 	private String content;
-	private Integer views;
+	private Integer views = 0;
 	@Column(name="img_name")
 	private String imgName;
 	@Column(name="img_url")
 	private String imgUrl;	
 	@Column(name="del_yn")
-	private String delYn;
+	private String delYn = "N";
 	
 	@CreationTimestamp
     @Column
