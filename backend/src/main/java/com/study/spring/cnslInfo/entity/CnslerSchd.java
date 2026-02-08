@@ -1,10 +1,11 @@
-package com.study.spring.bbs.entity;
+package com.study.spring.cnslInfo.entity;
 
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import com.study.spring.member.entity.Member;
+import com.study.spring.Member.entity.Member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,28 +22,30 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "bbs_like")
+@Table(name = "cnsler_schd")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BbsLike {
+public class CnslerSchd {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="like_id")
-	private Integer likeId;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="bbs_id", nullable= false)
-	private Bbs bbsId;
+	@Column(name="id")
+	private Integer id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="member_id", nullable = false)
 	private Member memberId;
 	
-	@Column(name="is_like")
-	private Boolean isLike;
+	@Column(name="start_time")
+	private String startTime;
+	
+	@Column(name="end_time")
+	private String endTime;
+	private Integer interval;
 	
 	@CreationTimestamp
-	private LocalDateTime created_at;
+	private LocalDateTime createdAt;
+	@UpdateTimestamp	
+	private LocalDateTime updatedAt;
 }

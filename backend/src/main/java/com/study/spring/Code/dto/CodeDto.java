@@ -1,4 +1,4 @@
-package com.study.spring.code.dto;
+package com.study.spring.Code.dto;
 
 public interface CodeDto {
     String getCode();

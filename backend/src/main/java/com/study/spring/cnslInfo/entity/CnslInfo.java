@@ -6,7 +6,7 @@ import java.util.Date;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.study.spring.member.entity.Member;
+import com.study.spring.Member.entity.Member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,7 +44,7 @@ public class CnslInfo {
 	private String cnslTp;
 	
 	@Column(name="cnsl_price")
-	private Integer cnslPrice;
+	private Long cnslPrice;
 	
 	@Column(name="cnsl_rate")
 	private float cnslRate;

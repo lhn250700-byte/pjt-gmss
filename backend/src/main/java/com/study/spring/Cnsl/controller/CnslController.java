@@ -1,9 +1,9 @@
 package com.study.spring.Cnsl.controller;
 
+import java.lang.String;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import com.study.spring.Cnsl.entity.CounselingStatus;
 import com.study.spring.Cnsl.dto.*;
@@ -36,15 +36,15 @@ public class CnslController {
 			Integer id = cnslService.reserveCounseling(cnslReqDto);
 			return ResponseEntity.ok(id);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Apply failure: " + e.getMessage());	
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Apply failure: " + e.getMessage());
 		}
 	}
 	
 	// 예약 벨리데이션 체크
 	@GetMapping("/api/iscnslyn") 
 	public Optional<IsCnslDto> isCounseling(
-			@RequestParam("memberId") UUID memberId, 
-			@RequestParam("cnslerId") UUID cnslerId,
+			@RequestParam("memberId") String memberId,
+			@RequestParam("cnslerId") String cnslerId,
 			@RequestParam("cnslDt") LocalDate cnslDt) {
 		Optional<IsCnslDto> isCounseling =  cnslService.isCounseling(memberId, cnslerId, cnslDt);
 		return isCounseling;
@@ -53,7 +53,7 @@ public class CnslController {
 	// 상담사의 특정 일자 예약 리스트
 	@GetMapping("/api/cnslAvailability")
 	public List<CnslerDateDto> getAvailableSlots(
-			@RequestParam("cnslerId") UUID cnslerId,
+			@RequestParam("cnslerId") String cnslerId,
 			@RequestParam("cnslDt") LocalDate cnslDt) {
 
 		return cnslService.getAvailableSlotsForCnsler(cnslerId, cnslDt);
@@ -86,13 +86,13 @@ public class CnslController {
 
 	// [상담사 월별 상담 건수]
 	@GetMapping("/api/counselSum/{cnslerId}/monthly")
-	public List<CnslDatePerMonthClassDto> getMyCounselingMonthlyCount(@PathVariable UUID cnslerId) {
+	public List<CnslDatePerMonthClassDto> getMyCounselingMonthlyCount(@PathVariable String cnslerId) {
 		return cnslService.findCounselingMonthlyCountByCounselor(cnslerId);
 	}
 
 	// [상담사 전체 건수]
 	@GetMapping("/api/counselSum/{cnslerId}")
-	public Optional<CnslSumDto> getMyCounselingTotalCount(@PathVariable UUID cnslerId) {
+	public Optional<CnslSumDto> getMyCounselingTotalCount(@PathVariable String cnslerId) {
 		return cnslService.findCounselingTotalCountByCounselor(cnslerId);
 	}
 
@@ -102,7 +102,7 @@ public class CnslController {
 			@RequestParam(name="status", required = false) CounselingStatus status,
 			@RequestParam(name="page", defaultValue = "0") int page,
 			@RequestParam(name="size", defaultValue = "10") int size,
-            @PathVariable UUID cnslerId
+            @PathVariable String cnslerId
 	) {
 		Pageable pageable = PageRequest.of(page, size);
 
@@ -119,7 +119,7 @@ public class CnslController {
 	public ResponseEntity<Page<cnslListWithoutStatusDto>> getPendingReservationList(
 			@RequestParam(name="page", defaultValue = "0") int page,
 			@RequestParam(name="size", defaultValue = "10") int size,
-            @PathVariable UUID cnslerId
+            @PathVariable String cnslerId
 	) {
 		Pageable pageable = PageRequest.of(page, size);
 

@@ -1,4 +1,4 @@
-package com.study.spring.member.service;
+package com.study.spring.Member.service;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -9,9 +9,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.study.spring.member.dto.MemberDto;
-import com.study.spring.member.entity.Member;
-import com.study.spring.member.repository.MemberRepository;
+import com.study.spring.Member.dto.MemberDto;
+import com.study.spring.Member.entity.Member;
+import com.study.spring.Member.repository.MemberRepository;
 
 import lombok.extern.log4j.Log4j2;
 

@@ -1,4 +1,4 @@
-package com.study.spring.member.entity;
+package com.study.spring.Member.entity;
 
 public enum MemberRole {
 	USER, SYSTEM, ADMIN 

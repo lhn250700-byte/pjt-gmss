@@ -1,4 +1,4 @@
-package com.study.spring.member.repository;
+package com.study.spring.Member.repository;
 
 import java.util.Optional;
 
@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.study.spring.member.entity.Member;
+import com.study.spring.Member.entity.Member;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, String>{
@@ -19,5 +19,6 @@ public interface MemberRepository extends JpaRepository<Member, String>{
 			where m.memberId = :email
 			""")
 	Optional<Member> findByEmail(@Param("email") String email);
-	
+
+	boolean existsByNickname(String nickname);
 }

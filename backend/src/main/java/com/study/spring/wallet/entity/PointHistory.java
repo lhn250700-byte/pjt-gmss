@@ -3,10 +3,8 @@ package com.study.spring.wallet.entity;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import com.study.spring.cnsl.entity.CnslReg;
-import com.study.spring.member.entity.Member;
+import com.study.spring.Member.entity.Member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,7 +37,7 @@ public class PointHistory {
 	private Member memberId;
 	
 	private Long amount;
-	@Column(name="pointAfter")
+	@Column(name="point_after")
 	private Long pointAfter;
 	
     // 상담 ID가 없는 경우도 있으로 연관관계 삭제
@@ -48,7 +46,8 @@ public class PointHistory {
 //	private CnslReg cnslId; 
 	
     @Column(name = "cnsl_id")
-    private Integer cnslId; 
+    private Integer cnslId;
+	private String brief;
 	
 	@CreationTimestamp
 	private LocalDateTime createdAt;

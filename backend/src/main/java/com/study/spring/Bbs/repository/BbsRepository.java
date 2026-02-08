@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface BbsRepository extends JpaRepository<Bbs, UUID> {
+public interface BbsRepository extends JpaRepository<Bbs, Integer> {
     @Query(value= """
         select
         b.bbs_id, b.title, b.content, b.views, b.created_at,

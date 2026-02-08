@@ -6,7 +6,6 @@ import java.time.LocalTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import com.study.spring.Member.entity.Member;
 
@@ -57,19 +56,19 @@ public class Cnsl_Reg {
     @Column(name="cnsl_end_time")
 	private LocalTime cnslEndTime; // 상담종료시간
     @Column(name="cnsl_stat")
-	private String cnslStat; // 상담상태
+	private String cnslStat = "A"; // 상담상태
     @Column(name="cnsl_title")
 	private String cnslTitle; // 상담제목
     @Column(name="cnsl_content")
 	private String cnslContent; // 상담신청내용
 	
     @Column(name="cnsl_todo_yn")
-	private String cnslTodoYn; // 상담진행여부
+	private String cnslTodoYn = "Y";// 상담진행여부
     
     @Column(name="del_yn")
     private String delYn = "N";
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @CreationTimestamp
 	private LocalDateTime createdAt;
 	
 	@UpdateTimestamp

@@ -1,22 +1,14 @@
-package com.study.spring.member.dto;
+package com.study.spring.Member.dto;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.jspecify.annotations.Nullable;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
-import com.study.spring.member.entity.MemberRole;
-
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.FetchType;
-import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 

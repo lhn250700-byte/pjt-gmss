@@ -45,7 +45,8 @@ public class Cnsl_Review {
 	private String content;
 	@Column(name="eval_pt")
 	private Integer evalPt;
-
+	@Column(name="del_yn")
+	private String delYn = "N";
 	@CreationTimestamp
 	private LocalDateTime created_at;
 	

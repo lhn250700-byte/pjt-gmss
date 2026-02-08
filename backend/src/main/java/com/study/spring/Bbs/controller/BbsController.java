@@ -1,7 +1,6 @@
 package com.study.spring.Bbs.controller;
 
 import com.study.spring.Bbs.dto.PopularPostClassDto;
-import com.study.spring.Bbs.dto.PopularPostDto;
 import com.study.spring.Bbs.service.BbsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

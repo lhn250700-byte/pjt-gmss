@@ -40,12 +40,12 @@ public class Cnsl_Resp {
     // (사용자와 N:1)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id", nullable = false)
-    private Member memmberId;
+    private Member memberId;
 	
 	private String content;
-	
-	@Column(name="del_yn")
-	private String delyn;
+
+    @Column(name="del_yn")
+    private String delYn = "N";
 	
 	@CreationTimestamp
     @Column(updatable = false)

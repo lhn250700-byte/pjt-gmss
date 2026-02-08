@@ -1,4 +1,4 @@
-package com.study.spring.member.dto;
+package com.study.spring.Member.dto;
 
 public interface MemberInfoEmailCheckDTO {
     String getUserInfoEmailCheckYn();         
