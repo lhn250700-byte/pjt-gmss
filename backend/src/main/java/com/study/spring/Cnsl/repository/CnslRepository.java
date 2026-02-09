@@ -22,24 +22,18 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
 
 
     @Query(value = """ 
-            	SELECT CASE WHEN COUNT(*) > 0 THEN 'Y' ELSE 'N' END AS isCounselingYn 
-            	FROM cnsl_reg cr, member u, member c 
-            	WHERE cr.member_id = :memberId 
-            	AND cr.cnsler_id = :cnslerId 
-            	AND cr.cnsl_stat IN ('A','C')
-            	AND cr.cnsl_dt = :cnslDt
+            select case when count(*) > 0 then 'Y' else 'N' end isCounselingYn
+            from cnsl_reg cr
+            where cr.del_yn = 'N'
+            and cr.cnsl_stat in ('A', 'B', 'C')
+            and cr.cnsl_dt = :cnslDt
+            and cr.cnsl_start_time = :cnslStartTime
+            and (
+                  cr.cnsler_id = :cnslerId
+               or cr.member_id = :memberId
+            )
             """, nativeQuery = true)
-    Optional<IsCnslDto> isCounseling(@Param("memberId") String memberId, @Param("cnslerId") String cnslerId, @Param("cnslDt") LocalDate cnslDt);
-
-    @Query(value = """
-            select case when count(*) > 0 then 'Y' else 'N' as isCnslYn
-            from cnsl_reg
-            where cnsler_id = :cnslerId
-            and del_yn = 'N'
-            and cnsl_stat in ('B', 'C')
-            and cnsl_dt = :cnslDt and cnsl_start_time = :cnslStartTime
-            """, nativeQuery = true)
-    Optional<IsCnslv2Dto> isCnsl(@Param("cnslerId") String cnslerId, @Param("cnslDt") LocalDate cnslDt, @Param("cnslStartTime") LocalTime cnslStartTime);
+    Optional<IsCnslDto> isCounseling(@Param("memberId") String memberId, @Param("cnslerId") String cnslerId, @Param("cnslDt") LocalDate cnslDt, @Param("cnslStartTime") LocalTime cnslStartTime);
 
     @Query(value = """
                 SELECT
