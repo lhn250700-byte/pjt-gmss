@@ -11,5 +11,5 @@ import java.util.Optional;
 @Repository
 public interface CnslerSchdRepository extends JpaRepository<CnslerSchd, Integer> {
     @Query(value = "SELECT * FROM cnsler_schd  WHERE member_id = :email", nativeQuery = true)
-    Optional<CnslerSchd> findSchduleByEmail(@Param("email") String email);
+    Optional<CnslerSchd> findScheduleByEmail(@Param("email") String email);
 }

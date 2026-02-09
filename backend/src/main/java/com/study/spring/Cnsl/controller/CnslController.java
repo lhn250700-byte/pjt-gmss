@@ -2,6 +2,7 @@ package com.study.spring.Cnsl.controller;
 
 import java.lang.String;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,8 +46,9 @@ public class CnslController {
 	public Optional<IsCnslDto> isCounseling(
 			@RequestParam("memberId") String memberId,
 			@RequestParam("cnslerId") String cnslerId,
-			@RequestParam("cnslDt") LocalDate cnslDt) {
-		Optional<IsCnslDto> isCounseling =  cnslService.isCounseling(memberId, cnslerId, cnslDt);
+			@RequestParam("cnslDt") LocalDate cnslDt,
+			@RequestParam("cnslStartTime") LocalTime cnslStartTime) {
+		Optional<IsCnslDto> isCounseling =  cnslService.isCounseling(memberId, cnslerId, cnslDt, cnslStartTime);
 		return isCounseling;
 	}
 

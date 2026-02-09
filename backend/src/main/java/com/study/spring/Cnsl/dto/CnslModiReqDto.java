@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CnslModiReqDto {
+	private String cnsler_id;
 	private String cnsl_title;
 	private String cnsl_content;
 	private LocalDate cnsl_date;
