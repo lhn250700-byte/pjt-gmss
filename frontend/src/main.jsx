@@ -5,7 +5,7 @@ import App from './App.jsx';
 import { BrowserRouter } from 'react-router-dom';
 import Nav from './components/Nav.jsx';
 import Footer from './components/Footer';
-import PcNav from './components/PCNav.jsx';
+import PcNav from './components/PcNav.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

@@ -1,7 +1,8 @@
 import React from 'react';
+import BoardForm from './BoardForm';
 
 const BoardWrite = () => {
-  return <div>BoardWrite</div>;
+  return <BoardForm mode="write" />;
 };
 
 export default BoardWrite;
