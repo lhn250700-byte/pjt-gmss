@@ -1,5 +1,6 @@
 package com.study.spring.Member.dto;
 
 public interface MemberInfoEmailCheckDTO {
-    String getUserInfoEmailCheckYn();         
+    String getUserInfoEmailCheckYn();
+    boolean getSocial();
 }

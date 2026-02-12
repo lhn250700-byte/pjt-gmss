@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Optional;
 import java.lang.String;
 
+import com.study.spring.Cnsl.entity.Cnsl_Resp;
 import com.study.spring.Cnsl.entity.CounselingStatus;
 import com.study.spring.Cnsl.dto.*;
+import com.study.spring.Cnsl.repository.CnslRespRepository;
 import com.study.spring.cnslInfo.entity.CnslInfo;
 import com.study.spring.cnslInfo.entity.CnslerSchd;
 import com.study.spring.cnslInfo.repository.CnslInfoRepository;
@@ -46,10 +48,12 @@ public class CnslService {
     private PointHistoryRepository pointHistoryRepository;
     @Autowired
     private CnslerSchdRepository cnslerSchdRepository;
+    @Autowired
+    private CnslRespRepository cnslRespRepository;
 
     // [상담 예약]
     @Transactional
-    public Integer reserveCounseling(CnslReqDto cnslReqDto) {
+    public Long reserveCounseling(CnslReqDto cnslReqDto) {
         Member member = memberRepository.findByEmail(cnslReqDto.getMember_id())
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 없습니다."));
         Member counselor = memberRepository.findByEmail(cnslReqDto.getCnsler_id())
@@ -80,11 +84,18 @@ public class CnslService {
         if (cnslReqDto.getCnsl_start_time().equals(endTime))
             throw new IllegalStateException("마감 시간 전으로 예약해 주시길 바랍니다.");
 
-        // 당일 예약 시 시간 제한 3시간
-        if (cnslReqDto.getCnsl_date().equals(LocalDate.now()) &&
-            cnslReqDto.getCnsl_start_time().isBefore(LocalTime.now().plusHours(3))) {
-            throw new IllegalStateException("당일 상담은 시작 3시간 전까지만 예약 가능합니다.");
+        // [당일 예약 시 시간 제한 3시간]
+        LocalDateTime now = LocalDateTime.now();
+
+        LocalDateTime consultationTime = LocalDateTime.of(
+                cnslReqDto.getCnsl_date(),
+                cnslReqDto.getCnsl_start_time()
+        );
+
+        if (!now.isBefore(consultationTime.minusHours(3))) {
+            throw new IllegalStateException("상담 시작 3시간 전까지만 예약 가능합니다.");
         }
+
 
         // [현재 잔액 get]
         Wallet wallet = walletRepository.findByEmail(cnslReqDto.getMember_id())
@@ -292,5 +303,74 @@ public class CnslService {
     // [상담 예약 관리(수락 전)]
     public Page<cnslListWithoutStatusDto> findPendingReservations(Pageable pageable, String cnslerId) {
         return cnslRepository.findPendingReservations(pageable, cnslerId);
+    }
+
+    // [상담 수락]
+    @Transactional
+    public void approveConsultation(Long cnslId, String message) {
+        Cnsl_Reg cnsl_Reg = cnslRepository.findById(cnslId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상담입니다."));
+
+        // [상담 상태에 따른 수락 가능 여부]
+        if (!"A".equals(cnsl_Reg.getCnslStat())) throw new IllegalStateException("현재 상담 상태에서는 수락이 불가능합니다.");
+
+        // [당일 수락 시 시간 제한 3시간]
+        LocalDateTime now = LocalDateTime.now();
+
+        LocalDateTime consultationTime = LocalDateTime.of(
+                cnsl_Reg.getCnslDt(),
+                cnsl_Reg.getCnslStartTime()
+        );
+
+        if (!now.isBefore(consultationTime.minusHours(3))) {
+            throw new IllegalStateException("상담 시작 3시간 이내에는 수락이 불가능합니다.");
+        }
+
+
+
+        Cnsl_Resp cnsl_resp = Cnsl_Resp
+                .builder()
+                .cnslId(cnsl_Reg)
+                .memberId(cnsl_Reg.getCnslerId())
+                .content(message)
+                .delYn("N")
+                .build();
+
+        cnsl_Reg.setCnslStat("B");
+        cnslRepository.save(cnsl_Reg);
+        cnslRespRepository.save(cnsl_resp);
+    }
+
+    // [상담 거절]
+    @Transactional
+    public void rejectConsultation(Long cnslId, String message) {
+        Cnsl_Reg cnsl_Reg = cnslRepository.findById(cnslId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상담입니다."));
+
+        // [상담 상태에 따른 거절 가능 여부]
+        if (!"A".equals(cnsl_Reg.getCnslStat())) throw new IllegalStateException("현재 상담 상태에서는 거절이 불가능합니다.");
+
+        // [당일 거절 시 시간 제한 3시간]
+        LocalDateTime now = LocalDateTime.now();
+
+        LocalDateTime consultationTime = LocalDateTime.of(
+                cnsl_Reg.getCnslDt(),
+                cnsl_Reg.getCnslStartTime()
+        );
+
+        if (!now.isBefore(consultationTime.minusHours(3))) {
+            throw new IllegalStateException("상담 시작 3시간 이내에는 거절이 불가능합니다.");
+        }
+
+        Cnsl_Resp cnsl_resp = Cnsl_Resp
+                .builder()
+                .cnslId(cnsl_Reg)
+                .memberId(cnsl_Reg.getCnslerId())
+                .content(message)
+                .delYn("N")
+                .build();
+
+        cnsl_Reg.setCnslStat("X");
+        cnsl_Reg.setCnslTodoYn("N");
+        cnslRepository.save(cnsl_Reg);
+        cnslRespRepository.save(cnsl_resp);
     }
 }

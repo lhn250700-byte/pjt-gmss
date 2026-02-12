@@ -30,7 +30,7 @@ public class Cnsl_Resp {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="resp_id")
-    private Integer respId;
+    private Long respId;
 	
 	// (상담신청과 N:1)
     @ManyToOne(fetch = FetchType.LAZY)

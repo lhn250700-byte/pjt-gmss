@@ -33,7 +33,7 @@ public class Cnsl_Reg {
 	@Id
 	@Column(name="cnsl_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer cnslId; // 상담 고유 ID (PK)
+	private Long cnslId; // 상담 고유 ID (PK)
 	
 	// 상담 신청자 (User와 N:1)
     @ManyToOne(fetch = FetchType.LAZY)

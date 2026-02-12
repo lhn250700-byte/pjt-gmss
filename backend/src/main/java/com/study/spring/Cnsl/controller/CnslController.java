@@ -34,7 +34,7 @@ public class CnslController {
 	@PostMapping("/api/reserve")
 	public ResponseEntity<?> createCounselingReservation(@RequestBody CnslReqDto cnslReqDto) {
 		try {
-			Integer id = cnslService.reserveCounseling(cnslReqDto);
+			Long id = cnslService.reserveCounseling(cnslReqDto);
 			return ResponseEntity.ok(id);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Apply failure: " + e.getMessage());
@@ -130,5 +130,27 @@ public class CnslController {
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.ok(rsvPage);
+	}
+
+	// [상담 수락]
+	@PostMapping("/api/approve/{cnslId}")
+	public ResponseEntity<?> approveConsultation(@PathVariable Long cnslId, @RequestBody cnslRespMessageDto message) {
+		try {
+			cnslService.approveConsultation(cnslId, message.getMessage());
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Response failure: " + e.getMessage());
+		}
+	}
+
+	// [상담 거절]
+	@PostMapping("/api/reject/{cnslId}")
+	public ResponseEntity<?> rejectConsultation(@PathVariable Long cnslId, @RequestBody cnslRespMessageDto message) {
+		try {
+			cnslService.rejectConsultation(cnslId, message.getMessage());
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Response failure: " + e.getMessage());
+		}
 	}
 }

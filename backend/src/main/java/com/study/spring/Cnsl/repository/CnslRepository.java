@@ -19,8 +19,6 @@ import com.study.spring.Cnsl.entity.Cnsl_Reg;
 
 @Repository
 public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
-
-
     @Query(value = """ 
             select case when count(*) > 0 then 'Y' else 'N' end isCounselingYn
             from cnsl_reg cr
@@ -124,4 +122,5 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
              and cr.cnsl_stat = 'A'
             """, nativeQuery = true)
     Page<cnslListWithoutStatusDto> findPendingReservations(Pageable pageable, @Param("cnslerId") String cnslerId);
+
 }

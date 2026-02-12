@@ -46,7 +46,7 @@ public class PointHistory {
 //	private CnslReg cnslId; 
 	
     @Column(name = "cnsl_id")
-    private Integer cnslId;
+    private Long cnslId;
 	private String brief;
 	
 	@CreationTimestamp
