@@ -1,5 +1,6 @@
 package com.study.spring.util;
 
+import java.io.UnsupportedEncodingException;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
@@ -8,6 +9,7 @@ import javax.crypto.SecretKey;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.WeakKeyException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,19 +33,19 @@ public class JWTUtil {
 		return jwtStr;
 	}
 
-//	public static Map<String, Object> validateToken(String token)
-//			throws WeakKeyException, UnsupportedEncodingException {
-//
-//		Map<String, Object> claim = null;
-//
-//		SecretKey key = Keys.hmacShaKeyFor(JWTUtil.key.getBytes("UTF-8"));
-//
-//		claim = Jwts.parserBuilder()
-//				.setSigningKey(key)
-//				.build()
-//				.parseClaimsJws(token) // 파싱 및 검증, 실패 시 에러
-//				.getBody();
-//
-//		return claim;
-//	}
+	public static Map<String, Object> validateToken(String token)
+			throws WeakKeyException, UnsupportedEncodingException {
+
+		Map<String, Object> claim = null;
+
+		SecretKey key = Keys.hmacShaKeyFor(JWTUtil.key.getBytes("UTF-8"));
+
+		claim = Jwts.parserBuilder()
+				.setSigningKey(key)
+				.build()
+				.parseClaimsJws(token) // 파싱 및 검증, 실패 시 에러
+				.getBody();
+
+		return claim;
+	}
 }
