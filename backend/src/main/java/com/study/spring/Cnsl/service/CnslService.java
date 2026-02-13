@@ -3,16 +3,13 @@ package com.study.spring.Cnsl.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.lang.String;
 
 import com.study.spring.Cnsl.entity.Cnsl_Resp;
-import com.study.spring.Cnsl.entity.CounselingStatus;
 import com.study.spring.Cnsl.dto.*;
 import com.study.spring.Cnsl.repository.CnslRespRepository;
-import com.study.spring.cnslInfo.entity.CnslInfo;
 import com.study.spring.cnslInfo.entity.CnslerSchd;
 import com.study.spring.cnslInfo.repository.CnslInfoRepository;
 import com.study.spring.cnslInfo.repository.CnslerSchdRepository;
@@ -22,8 +19,6 @@ import com.study.spring.wallet.repository.PointHistoryRepository;
 import com.study.spring.wallet.repository.WalletRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.study.spring.Cnsl.entity.Cnsl_Reg;
@@ -265,45 +260,71 @@ public class CnslService {
         cnslRepository.save(cnsl_Reg);
     }
 
-    // [상담사 월별 상담 건수]
-    public List<CnslDatePerMonthClassDto> findCounselingMonthlyCountByCounselor(String cnslerId) {
-        /*
-         * 1. 쿼리로 startMonth와 cnt를 가져온다.
-         * 2. 모든 것을 DB에 맡기는 것을 방지하기 위해 스프링에서 endMonth를 구한다.
-         * 3. 이때, 쿼리값을 가져오는 DTO는 interface기 때문에 class 형태의 Dto를 추가로 만들어 값을 저장한다.
-         * */
-        List<CnslDatePerMonthDto> results = cnslRepository.getCnslDatePerMonthList(cnslerId);
-
-        return results.stream().map(r -> {
-            LocalDate monthStart = r.getMonthStart();
-            LocalDate monthEnd = YearMonth.from(monthStart).atEndOfMonth();
-
-            return CnslDatePerMonthClassDto
-                    .builder()
-                    .monthStart(monthStart)
-                    .monthEnd(monthEnd)
-                    .totalCnt(r.getTotalCnt())
-                    .reservedCnt(r.getReservedCnt())
-                    .completedCnt(r.getCompletedCnt())
-                    .build();
-        }).toList();
+    // =========== SYSTEM ===========
+    // [기간 내 상담 건수 : 상담 상태별]
+    public ConsultationStatusCountDto findConsultationStatusCounts(String cnslerId, LocalDate startDate, LocalDate endDate) {
+        return cnslRepository.findConsultationStatusCounts(cnslerId, startDate, endDate);
     }
 
-    // [상담사 전체 건수]
-    public Optional<CnslSumDto> findCounselingTotalCountByCounselor(String cnslerId) {
-        return cnslRepository.getCnslTotalCount(cnslerId);
+    // [기간 내 상담 건수 : 카테고리별]
+    public List<ConsultationCategoryCountDto> findConsultationCategoryCounts(String cnslerId, LocalDate startDate, LocalDate endDate) {
+        return cnslRepository.findConsultationCategoryCounts(cnslerId, startDate, endDate);
     }
 
-    // [상담 내역(전체)]
-    public Page<cnslListDto> findCounselingsByCounselor(CounselingStatus status, Pageable pageable, String cnslerId) {
-        String stat = status == null ? null : status.name();
-        return cnslRepository.findCounselingsByCounselor(stat, pageable, cnslerId);
+    // [일자별 예약 및 완료 건수 추이]
+    public List<ConsultationStatusDailyDto> findDailyReservationCompletionTrend(String cnslerId, LocalDate startDate, LocalDate endDate) {
+        return cnslRepository.findDailyReservationCompletionTrend(cnslerId, startDate, endDate);
     }
 
-    // [상담 예약 관리(수락 전)]
-    public Page<cnslListWithoutStatusDto> findPendingReservations(Pageable pageable, String cnslerId) {
-        return cnslRepository.findPendingReservations(pageable, cnslerId);
+    // [선택 기간 내 수익, 최근 3달 수익]
+    public List<MyRevenueSummaryDto> findMyRevenueSummary(String cnslerId, LocalDate startDate, LocalDate endDate) {
+        return cnslRepository.findMyRevenueSummary(cnslerId, startDate, endDate);
     }
+
+    // [가장 많은 상담 유형]
+    public MostConsultedTypeDto findMostConsultedType(String cnslerId, LocalDate startDate, LocalDate endDate) {
+        return cnslRepository.findMostConsultedType(cnslerId, startDate, endDate);
+    }
+
+//    // [상담사 월별 상담 건수]
+//    public List<CnslDatePerMonthClassDto> findCounselingMonthlyCountByCounselor(String cnslerId) {
+//        /*
+//         * 1. 쿼리로 startMonth와 cnt를 가져온다.
+//         * 2. 모든 것을 DB에 맡기는 것을 방지하기 위해 스프링에서 endMonth를 구한다.
+//         * 3. 이때, 쿼리값을 가져오는 DTO는 interface기 때문에 class 형태의 Dto를 추가로 만들어 값을 저장한다.
+//         * */
+//        List<CnslDatePerMonthDto> results = cnslRepository.getCnslDatePerMonthList(cnslerId);
+//
+//        return results.stream().map(r -> {
+//            LocalDate monthStart = r.getMonthStart();
+//            LocalDate monthEnd = YearMonth.from(monthStart).atEndOfMonth();
+//
+//            return CnslDatePerMonthClassDto
+//                    .builder()
+//                    .monthStart(monthStart)
+//                    .monthEnd(monthEnd)
+//                    .totalCnt(r.getTotalCnt())
+//                    .reservedCnt(r.getReservedCnt())
+//                    .completedCnt(r.getCompletedCnt())
+//                    .build();
+//        }).toList();
+//    }
+//
+//    // [상담사 전체 건수]
+//    public Optional<CnslSumDto> findCounselingTotalCountByCounselor(String cnslerId) {
+//        return cnslRepository.getCnslTotalCount(cnslerId);
+//    }
+//
+//    // [상담 내역(전체)]
+//    public Page<cnslListDto> findCounselingsByCounselor(CounselingStatus status, Pageable pageable, String cnslerId) {
+//        String stat = status == null ? null : status.name();
+//        return cnslRepository.findCounselingsByCounselor(stat, pageable, cnslerId);
+//    }
+//
+//    // [상담 예약 관리(수락 전)]
+//    public Page<cnslListWithoutStatusDto> findPendingReservations(Pageable pageable, String cnslerId) {
+//        return cnslRepository.findPendingReservations(pageable, cnslerId);
+//    }
 
     // [상담 수락]
     @Transactional
@@ -373,4 +394,28 @@ public class CnslService {
         cnslRepository.save(cnsl_Reg);
         cnslRespRepository.save(cnsl_resp);
     }
+
+
+
+    // =========== ADMIN ===========
+    // [기간 내 상담 건수 및 수익 : 카테고리별]
+    public List<CategoryRevenueStatisticsDto> findCategoryRevenueStatistics(LocalDate startDate, LocalDate endDate) {
+        return cnslRepository.findCategoryRevenueStatistics(startDate, endDate);
+    }
+
+    // [기간 내 상담 건수 및 수익 : 상담 유형별]
+    public List<CategoryRevenueStatisticsDto> findTypeRevenueStatistics(LocalDate startDate, LocalDate endDate) {
+        return cnslRepository.findTypeRevenueStatistics(startDate, endDate);
+    }
+
+    // [실시간 위험 감지 및 조치 현황]
+    public List<RealtimeRiskDetectionStatusDto> findRealtimeRiskDetectionStatus() {
+        return cnslRepository.findRealtimeRiskDetectionStatus();
+    }
+
+    // [정산현황 : 일자별전체 상담사 내역 관련 집계 (최근일, 상담매출액순)]
+    public List<CounselorRevenueLatestlyDto> findLatestlyCounselorRevenue() {
+        return cnslRepository.findLatestlyCounselorRevenue();
+    }
+
 }

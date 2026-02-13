@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.lang.String;
 
-import com.study.spring.Cnsl.entity.CounselingStatus;
 import com.study.spring.Cnsl.dto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -123,4 +122,217 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
             """, nativeQuery = true)
     Page<cnslListWithoutStatusDto> findPendingReservations(Pageable pageable, @Param("cnslerId") String cnslerId);
 
+
+    @Query(value = """
+        select 
+            r.cnsler_id, 
+            m.nickname,
+           sum(case when r.cnsl_stat in ('A','B','C') then 1 else 0 end) as cnslReqCnt,
+           sum(case when r.cnsl_stat in ('D') then 1 else 0 end) as cnslDoneCnt,
+           count(*)
+        from cnsl_reg r
+        join member m on r.cnsler_id = m.member_id
+        where cnsl_stat not in ('X')
+        and cnsl_dt between :startDate and :endDate
+        and r.cnsler_id = :cnslerId
+        group by cnsler_id, m.nickname
+    """, nativeQuery = true)
+    ConsultationStatusCountDto findConsultationStatusCounts(@Param("cnslerId") String cnslerId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query(value =
+        """
+        select 
+              c.code,
+              c.code_name,
+              to_char(coalesce(b.cnsl_price_sum, 0),'999,999,999,999') cnslPriceSum,
+              to_char(coalesce(b.cnsl_price_cmsn, 0),'999,999,999,999') cnslPriceCmsn,
+              to_char(coalesce(b.cnsl_price_sum, 0)
+                    - coalesce(b.cnsl_price_cmsn, 0),'999,999,999,999') cnslExctAmt,
+              coalesce(b.cnsl_count, 0) cnslCount
+       from code c
+       left join (
+                select 
+                   cr.cnsler_id,
+                   m.nickname,
+                   cr.cnsl_tp,
+                   get_code_nm('cnsl_tp',cr.cnsl_tp) cnsl_tp_nm,
+                   sum(coalesce(ci.cnsl_price,0)) cnsl_price_sum,
+                   trunc(sum(coalesce(ci.cnsl_price,0) * coalesce(ci.cnsl_rate,0))::numeric,-1) cnsl_price_cmsn , -- 10자리에서 버림
+                   count(*) cnsl_count
+                from cnsl_reg cr
+                join member m on m.member_id = cr.cnsler_id
+                left join cnsl_info ci on ci.member_id = cr.cnsler_id and ci.cnsl_tp = cr.cnsl_tp
+                where cr.cnsl_stat not in ('X') -- 상담취소제외
+                and cr.cnsler_id = :cnslerId
+                and cr.cnsl_dt between :startDate and :endDate
+                group by cr.cnsl_dt, cr.cnsler_id, m.nickname, cr.cnsl_tp ) b
+                on c.code = b.cnsl_tp
+       where c.col_id = 'cnsl_tp'
+       order by c.code
+    """, nativeQuery = true)
+    List<ConsultationCategoryCountDto> findConsultationCategoryCounts(@Param("cnslerId") String cnslerId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query(value = """
+        select 
+           r.cnsl_dt,
+           r.cnsler_id, 
+           m.nickname,
+           sum(case when r.cnsl_stat in ('A','B','C') then 1 else 0 end) cnslReqCnt,
+           sum(case when r.cnsl_stat in ('D') then 1 else 0 end) cnslDoneCnt,
+           count(*)
+        from cnsl_reg r
+        join member m on r.cnsler_id = m.member_id
+        where cnsl_stat not in ('X')
+        and cnsl_dt between :startDate and :endDate
+        and r.cnsler_id = :cnslerId
+        group by r.cnsl_dt, cnsler_id, m.nickname
+        order by r.cnsl_dt desc
+    """, nativeQuery = true)
+    List<ConsultationStatusDailyDto> findDailyReservationCompletionTrend(@Param("cnslerId") String cnslerId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query(value = """
+            select cr.cnsler_id,
+            	   m.nickname,
+            	   '기간별수익합' tp,
+                   to_char(sum(coalesce(ci.cnsl_price,0)), '999,999,999,999') cnslPriceSum,
+                   to_char(trunc(sum(coalesce(ci.cnsl_price,0) * coalesce(ci.cnsl_rate,0))::numeric,-1), '999,999,999,999') cnslPriceCmsn , -- 10자리에서 버림
+                   to_char(sum(coalesce(ci.cnsl_price,0))
+            			- trunc(sum(coalesce(ci.cnsl_price,0) * coalesce(ci.cnsl_rate,0))::numeric,-1), '999,999,999,999') cnslExctAmt,
+                   count(*) cnslCount
+            from cnsl_reg cr
+            join member m on m.member_id = cr.cnsler_id
+            left join cnsl_info ci on ci.member_id = cr.cnsler_id and ci.cnsl_tp = cr.cnsl_tp
+            where cr.cnsl_stat not in ('X') -- 상담취소제외
+            and cr.cnsler_id = :cnslerId
+            and cr.cnsl_dt between :startDate and :endDate
+            group by cr.cnsler_id, m.nickname
+            union all
+            select cr.cnsler_id,
+            	   m.nickname,
+            	   '3개월별수익합' tp,
+                   to_char(sum(coalesce(ci.cnsl_price,0)), '999,999,999,999') cnslPriceSum,
+                   to_char(trunc(sum(coalesce(ci.cnsl_price,0) * coalesce(ci.cnsl_rate,0))::numeric,-1), '999,999,999,999') cnslPriceCmsn , -- 10자리에서 버림
+                   to_char(sum(coalesce(ci.cnsl_price,0))
+            			- trunc(sum(coalesce(ci.cnsl_price,0) * coalesce(ci.cnsl_rate,0))::numeric,-1), '999,999,999,999') cnslExctAmt,
+                   count(*) cnslCount
+            from cnsl_reg cr
+            join member m on m.member_id = cr.cnsler_id
+            left join cnsl_info ci on ci.member_id = cr.cnsler_id and ci.cnsl_tp = cr.cnsl_tp
+            where cr.cnsl_stat not in ('X') -- 상담취소제외
+            and cr.cnsler_id = :cnslerId
+            and cr.cnsl_dt between current_date - INTERVAL '3 MONTH' and current_date --current_date
+            group by cr.cnsler_id, m.nickname
+    """, nativeQuery = true)
+    List<MyRevenueSummaryDto> findMyRevenueSummary(@Param("cnslerId") String cnslerId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query(value = """
+        select 
+               cr.cnsler_id,
+               m.nickname,
+               cr.cnsl_tp,
+               get_code_nm('cnsl_tp',cr.cnsl_tp) cnslTpNm,
+               count(*) cnslCount
+        from cnsl_reg cr
+        join member m on m.member_id = cr.cnsler_id
+        left join cnsl_info ci on ci.member_id = cr.cnsler_id and ci.cnsl_tp = cr.cnsl_tp
+        where cr.cnsl_stat not in ('X') -- 상담취소제외
+        and cr.cnsler_id = :cnslerId
+        and cr.cnsl_dt between :startDate and :endDate
+        group by cr.cnsler_id, m.nickname, cr.cnsl_tp
+        order by count(*) desc, cr.cnsl_tp
+        limit 1
+    """, nativeQuery = true)
+    MostConsultedTypeDto findMostConsultedType(@Param("cnslerId") String cnslerId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query(value=
+            """
+        select to_char(r.created_at, 'YYYY-MM-DD HH24:MI:SS') risk_date,
+               r.table_id,
+               r.bbs_div,
+               get_code_nm('bbs_div', bbs_div) bbs_div_nm,
+               r.member_id,
+               m.nickname,
+               r.content,
+               r.action
+        from bbs_risk r
+        join  member m on r.member_id = m.member_id
+        order by r.created_at desc
+    """, nativeQuery = true)
+    List<RealtimeRiskDetectionStatusDto> findRealtimeRiskDetectionStatus();
+
+    @Query(value=
+            """
+        select cr.cnsl_dt,
+               cr.cnsler_id,
+               m.nickname,
+               to_char(sum(coalesce(ci.cnsl_price,0)),'999,999,999,999') cnsl_price_sum,
+               to_char(trunc(sum(coalesce(ci.cnsl_price,0) * coalesce(ci.cnsl_rate,0))::numeric,-1),'999,999,999,999') cnsl_price_cmsn , -- 10자리에서 버림
+               to_char(sum(coalesce(ci.cnsl_price,0))
+               	- trunc(sum(coalesce(ci.cnsl_price,0) * coalesce(ci.cnsl_rate,0))::numeric,-1),'999,999,999,999') cnsl_exct_sum,
+               '완료' exct_stat,
+               count(*) cnsl_count
+        from cnsl_reg cr
+        join member m on m.member_id = cr.cnsler_id
+        left join cnsl_info ci on ci.member_id = cr.cnsler_id and ci.cnsl_tp = cr.cnsl_tp
+        where cr.cnsl_stat not in ('X') -- 상담취소제외
+        and cr.cnsl_dt between current_date - 7 and current_date
+        group by cr.cnsl_dt, cr.cnsler_id, m.nickname
+        order by cr.cnsl_dt desc , sum(coalesce(ci.cnsl_price,0)) desc, cr.cnsler_id
+    """, nativeQuery = true)
+    List<CounselorRevenueLatestlyDto> findLatestlyCounselorRevenue();
+
+    
+    @Query(value= """
+            select c.code,
+                   c.code_name,
+                   to_char(coalesce(b.cnsl_price_sum, 0),'999,999,999,999') cnsl_price_sum,
+                   to_char(coalesce(b.cnsl_price_cmsn, 0),'999,999,999,999') cnsl_price_cmsn,
+                   to_char(coalesce(b.cnsl_exct_sum,0),'999,999,999,999') cnsl_exct_sum,
+                   coalesce(b.cnsl_count,0) cnsl_count,
+                   coalesce(avg_cnsl_time, '00:00:00') avg_cnsl_time
+            from code c
+            left join ( select cr.cnsl_cate,
+            			       sum(coalesce(ci.cnsl_price,0)) cnsl_price_sum,
+            			       trunc(sum(coalesce(ci.cnsl_price,0) * coalesce(ci.cnsl_rate,0))::numeric,-1) cnsl_price_cmsn , -- 10자리에서 버림
+            			       sum(coalesce(ci.cnsl_price,0))
+            			       	- trunc(sum(coalesce(ci.cnsl_price,0) * coalesce(ci.cnsl_rate,0))::numeric,-1) cnsl_exct_sum,
+            			       to_char(avg(cnsl_end_time - cnsl_start_time), 'HH24:MI:SS') avg_cnsl_time,
+            			       count(*) cnsl_count
+            			from cnsl_reg cr
+            			join member m on m.member_id = cr.cnsler_id
+            			left join cnsl_info ci on ci.member_id = cr.cnsler_id and ci.cnsl_tp = cr.cnsl_tp
+            			where cr.cnsl_stat not in ('X') -- 상담취소제외
+            			and cr.cnsl_dt between :startDate and :endDate
+            			group by cr.cnsl_cate ) b on c.code = b.cnsl_cate
+            where c.col_id = 'cnsl_cate'
+            order by c.code
+    """, nativeQuery = true)
+    List<CategoryRevenueStatisticsDto> findCategoryRevenueStatistics(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query(value= """
+            select c.code,
+                   c.code_name,
+                   to_char(coalesce(b.cnsl_price_sum, 0),'999,999,999,999') cnsl_price_sum,
+                   to_char(coalesce(b.cnsl_price_cmsn, 0),'999,999,999,999') cnsl_price_cmsn,
+                   to_char(coalesce(b.cnsl_exct_sum,0),'999,999,999,999') cnsl_exct_sum,
+                   coalesce(b.cnsl_count,0) cnsl_count,
+                   coalesce(avg_cnsl_time, '00:00:00') avg_cnsl_time
+            from code c
+            left join ( select cr.cnsl_tp,
+            			       sum(coalesce(ci.cnsl_price,0)) cnsl_price_sum,
+            			       trunc(sum(coalesce(ci.cnsl_price,0) * coalesce(ci.cnsl_rate,0))::numeric,-1) cnsl_price_cmsn , -- 10자리에서 버림
+            			       sum(coalesce(ci.cnsl_price,0))
+            			       	- trunc(sum(coalesce(ci.cnsl_price,0) * coalesce(ci.cnsl_rate,0))::numeric,-1) cnsl_exct_sum,
+            			       to_char(avg(cnsl_end_time - cnsl_start_time), 'HH24:MI:SS') avg_cnsl_time,
+            			       count(*) cnsl_count
+            			from cnsl_reg cr
+            			join member m on m.member_id = cr.cnsler_id
+            			left join cnsl_info ci on ci.member_id = cr.cnsler_id and ci.cnsl_tp = cr.cnsl_tp
+            			where cr.cnsl_stat not in ('X') -- 상담취소제외
+            			and cr.cnsl_dt between :startDate and :endDate
+            			group by cr.cnsl_tp ) b on c.code = b.cnsl_tp
+            where c.col_id = 'cnsl_tp'
+            order by c.code
+    """, nativeQuery = true)
+    List<CategoryRevenueStatisticsDto> findTypeRevenueStatistics(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

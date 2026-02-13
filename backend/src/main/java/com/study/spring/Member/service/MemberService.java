@@ -2,6 +2,7 @@ package com.study.spring.Member.service;
 
 import com.study.spring.Member.dto.MemberDto;
 import com.study.spring.Member.dto.MemberInfoEmailCheckDTO;
+import com.study.spring.Member.dto.MemberInfoNicknameCheckDTO;
 import com.study.spring.Member.dto.SignUpDto;
 import com.study.spring.Member.entity.Member;
 import com.study.spring.Member.entity.MemberRole;
@@ -20,9 +21,10 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public void register(SignUpDto request) {
         Optional<MemberInfoEmailCheckDTO> checkResults = memberInfoRepository.memberInfoEmailCheckYn(request.getEmail());
-
+        Optional<MemberInfoNicknameCheckDTO> nicknameCheckResult = memberInfoRepository.memberInfoNicknameCheckYn(request.getNickname());
         // [소셜 + 계정 존재]
         checkResults.ifPresent(res -> {
             if ("Y".equals(res.getUserInfoEmailCheckYn()) && res.getSocial()) {
@@ -37,6 +39,11 @@ public class MemberService {
                         request.getEmail()
                 ));
             }
+        });
+
+        // [닉네임 중복 체크]
+        nicknameCheckResult.ifPresent(res -> {
+            if ("Y".equals(res.getUserInfoNicknameCheckYn())) throw new IllegalStateException(String.format("닉네임 중복 : 닉네임 '%s'은(는) 이미 사용 중입니다.", request.getNickname()));
         });
 
         // [비밀번호 더블 체크 실패]
