@@ -1,6 +1,7 @@
 package com.study.spring.Member.controller;
 
 import com.study.spring.Member.dto.MemberDto;
+import com.study.spring.Member.dto.SignUpDto;
 import com.study.spring.Member.service.MemberService;
 import com.study.spring.util.JWTUtil;
 import jakarta.servlet.http.Cookie;
@@ -30,8 +31,8 @@ public class MemberController {
 	}
 
 	@PostMapping("/api/member/signup")
-	public ResponseEntity<?> register(@RequestBody MemberDto memberDto) {
-		memberService.register(memberDto);
+	public ResponseEntity<?> register(@RequestBody SignUpDto signUpDto) {
+		memberService.register(signUpDto);
 		return ResponseEntity.ok("회원가입 성공");
 	}
 

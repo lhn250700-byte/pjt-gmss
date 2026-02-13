@@ -14,9 +14,10 @@ public interface MemberInfoRepository extends JpaRepository<Member, String> {
 
     // DTO 인터페이스를 반환 타입으로 지정
     @Query(value = """
-            SELECT CASE WHEN COUNT(*) > 0 THEN 'Y' ELSE 'N' END AS userInfoEmailCheckYn
+            SELECT m.social as social, CASE WHEN COUNT(*) > 0 THEN 'Y' ELSE 'N' END AS userInfoEmailCheckYn
             FROM member m
             WHERE m.member_id = :email
+            group by m.social
             """,
             nativeQuery = true)
     Optional<MemberInfoEmailCheckDTO> memberInfoEmailCheckYn(@Param("email") String email);
