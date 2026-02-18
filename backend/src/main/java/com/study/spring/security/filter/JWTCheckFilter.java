@@ -22,14 +22,10 @@ public class JWTCheckFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 
-        String path = request.getRequestURI();
+        String path = request.getRequestURI();	
         log.info("shouldNotFilter check url................." + path);
 
-        if (path.startsWith("/api/member/")) {
-            return true;
-        }
-
-        if (path.startsWith("/api/auth/refresh")) {
+        if (path.startsWith("/api/member/") || path.startsWith("/api/auth/refresh")) {
             return true;
         }
 
@@ -83,6 +79,10 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             String nickname = (String) claims.get("nickname");
             Boolean social = (Boolean) claims.get("social");
             List<String> roleNames = (List<String>) claims.get("roleNames");
+            
+            if (nickname == null) {
+                nickname = "kakao_";
+            }
 
             MemberDto memberDto = new MemberDto(email, password, nickname, social.booleanValue(), roleNames);
 

@@ -1,5 +1,7 @@
 package com.study.spring.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -8,22 +10,28 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import com.study.spring.security.handler.APILoginFailHandler;
-import com.study.spring.security.handler.APILoginSuccessHandler;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.study.spring.Member.service.CustomOAuth2UserService;
+import com.study.spring.security.filter.JWTCheckFilter;
+import com.study.spring.security.handler.APILoginFailHandler;
+import com.study.spring.security.handler.APILoginSuccessHandler;
+import com.study.spring.security.handler.OAuth2LoginSuccessHandler;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Configuration
 @Log4j2
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class CustomSecurityConfig {
+	private final CustomOAuth2UserService customOAuth2UserService;
+
+	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -34,17 +42,38 @@ public class CustomSecurityConfig {
 		log.info("---------------------security config---------------------------");
 		
 		http.csrf(config -> config.disable());
-		http.cors(config -> config.disable());
+//		http.cors(config -> config.disable());
+		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 		http.sessionManagement(sessionConfig ->  sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		http.formLogin(config -> {
 		      config.loginPage("/api/member/login");
 		      config.successHandler(new APILoginSuccessHandler());
 		      config.failureHandler(new APILoginFailHandler());
+		      
 		    });
+		
+		
+		/*
+		 * http.authorizeHttpRequests(auth -> auth .requestMatchers( "/",
+		 * "/api/member/signup", "/api/member/login", "/api/auth/refresh" ).permitAll()
+		 * .anyRequest().authenticated() );
+		 */
+
+		// 일반 로그인 필터
+		http.addFilterBefore(new JWTCheckFilter(), UsernamePasswordAuthenticationFilter.class);
+		
+		// OAuth2 로그인 설정
+        http.oauth2Login(oauth2 -> oauth2
+            .userInfoEndpoint(userInfo -> 
+                userInfo.userService(customOAuth2UserService)
+            )
+            .successHandler(new APILoginSuccessHandler())
+        );
 		
 		return http.build();
 	}
-
+	
+	
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
@@ -57,8 +86,8 @@ public class CustomSecurityConfig {
 		// 				"http://localhost:5173"
 		// 				)
 		// 		);
-
-
+		
+		
 		config.setAllowCredentials(true);              // 반드시 false 쿠키인증이 필요시 true
 		config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
 		config.setAllowedHeaders(List.of("*"));  // 모든 헤더 허용 (CORS 프리플라이트 요청 처리)
