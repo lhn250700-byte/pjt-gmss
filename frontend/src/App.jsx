@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/common/home/Home';
 import Chat from './pages/user/chat/Chat';
@@ -29,8 +29,13 @@ import EditCounselorAbout from './pages/system/info/EditCounselorAbout';
 import CounselorClientChat from './pages/system/info/CounselorClientChat';
 import ScheduleManagement from './pages/system/info/ScheduleManagement';
 import RiskCaseList from './pages/system/info/RiskCaseList';
+import { refreshAccessToken } from './axios/Auth';
 
 const App = () => {
+  useEffect(() => {
+    refreshAccessToken();
+  }, []);
+
   return (
     <>
       <Routes>

@@ -3,6 +3,7 @@ package com.study.spring.Member.service;
 import java.util.Map;
 import java.util.Optional;
 
+import com.study.spring.Member.repository.MemberInfoRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -25,6 +26,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService
         implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final MemberRepository memberRepository;
+    private final MemberInfoRepository memberInfoRepository;
 
     @Override
     @Transactional
@@ -48,9 +50,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService
 
         Optional<Member> optionalMember = memberRepository.findByEmail(attributes.getEmail());
 
-        // 이미 존재 → 그대로 사용
         if(optionalMember.isPresent()) {
-            return optionalMember.get();
+            // [기존 유저 + 일반 회원인 경우 : 에러 발생]
+            if (!optionalMember.get().isSocial()) throw new OAuth2AuthenticationException("이미 해당 이메일로 가입된 계정이 존재합니다.");
+            // [기존 유저 + 소셜 회원인 경우 : 로그인 계속]
+            else return optionalMember.get();
         }
 
         // 신규 회원 → 자동 가입

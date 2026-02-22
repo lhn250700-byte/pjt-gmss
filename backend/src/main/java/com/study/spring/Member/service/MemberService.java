@@ -1,9 +1,6 @@
 package com.study.spring.Member.service;
 
-import com.study.spring.Member.dto.MemberDto;
-import com.study.spring.Member.dto.MemberInfoEmailCheckDTO;
-import com.study.spring.Member.dto.MemberInfoNicknameCheckDTO;
-import com.study.spring.Member.dto.SignUpDto;
+import com.study.spring.Member.dto.*;
 import com.study.spring.Member.entity.Member;
 import com.study.spring.Member.entity.MemberRole;
 import com.study.spring.Member.repository.MemberInfoRepository;
@@ -46,9 +43,6 @@ public class MemberService {
             if ("Y".equals(res.getUserInfoNicknameCheckYn())) throw new IllegalStateException(String.format("닉네임 중복 : 닉네임 '%s'은(는) 이미 사용 중입니다.", request.getNickname()));
         });
 
-        // [비밀번호 더블 체크 실패]
-        if (!request.getPassword().equals(request.getPasswordConfirm())) throw new IllegalArgumentException("비밀번호가 일치하지 않습니다. 다시 확인해 주세요.");
-
         String encode = passwordEncoder.encode(request.getPassword());
 
         Member member = Member
@@ -69,6 +63,50 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    @Transactional
+    public void kakaoRegister(String email, KakaoSignUpDto kakaoSignUpDto) {
+        Optional<Member> member = memberRepository.findByEmail(email);
+        Optional<MemberInfoNicknameCheckDTO> nicknameCheckResult = memberInfoRepository.memberInfoNicknameCheckYn(kakaoSignUpDto.getNickname());
+
+        // [닉네임 중복 체크]
+        nicknameCheckResult.ifPresent(res -> {
+            if ("Y".equals(res.getUserInfoNicknameCheckYn())) throw new IllegalStateException(String.format("닉네임 중복 : 닉네임 '%s'은(는) 이미 사용 중입니다.", kakaoSignUpDto.getNickname()));
+        });
+
+        if (member.isEmpty()) {
+            throw new IllegalArgumentException("회원이 존재하지 않습니다.");
+        }
+
+        if (kakaoSignUpDto.getNickname() != null) {
+            member.get().setNickname(kakaoSignUpDto.getNickname());
+        }
+
+        if (kakaoSignUpDto.getGender() != null) {
+            member.get().setGender(kakaoSignUpDto.getGender());
+        }
+
+        if (kakaoSignUpDto.getMbti() != null) {
+            member.get().setMbti(kakaoSignUpDto.getMbti());
+        }
+
+        if (kakaoSignUpDto.getBirth() != null) {
+            member.get().setBirth(kakaoSignUpDto.getBirth());
+        }
+
+        if (kakaoSignUpDto.getPersona() != null) {
+            member.get().setPersona(kakaoSignUpDto.getPersona());
+        }
+
+        if (kakaoSignUpDto.getProfile() != null) {
+            member.get().setProfile(kakaoSignUpDto.getProfile());
+        }
+
+        if (kakaoSignUpDto.getText() != null) {
+            member.get().setText(kakaoSignUpDto.getText());
+        }
+    }
+
+
     /**
      * 닉네임 중복 체크
      * @return 중복이면 true, 사용 가능하면 false
@@ -77,7 +115,7 @@ public class MemberService {
     public boolean isNicknameDuplicated(String nickname) {
         return memberRepository.existsByNickname(nickname);
     }
-   
+
 
     /**
      * email 중복 체크
@@ -85,6 +123,7 @@ public class MemberService {
      */
     @Transactional(readOnly = true)
     public boolean isEmailDuplicated(String email) {
-        return false; 
+        return false;
     }
+
 }

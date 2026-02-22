@@ -31,6 +31,8 @@ public class APILoginSuccessHandler implements AuthenticationSuccessHandler {
 		
 		Object principal = authentication.getPrincipal(); // principal에 실제 로그인한 사용자의 객체 저장
 		MemberDto memberDto;
+
+		boolean isSocialLogin = false;
 		
 		// 일반 로그인
 		if (principal instanceof MemberDto dto) {
@@ -40,6 +42,7 @@ public class APILoginSuccessHandler implements AuthenticationSuccessHandler {
 		// 카카오 로그인
 		else if (principal instanceof CustomOAuth2User oAuth2User) {
 			memberDto = oAuth2User.getMemberDto();
+			isSocialLogin = true;
 			log.info("소셜 로그인 성공: {}", memberDto.getEmail());
 		}
 		else throw new RuntimeException("지원하지 않는 Principal 타입: " + principal);
@@ -59,19 +62,21 @@ public class APILoginSuccessHandler implements AuthenticationSuccessHandler {
 		refreshTokenCookie.setAttribute("SameSite", "Lax"); // SameStie = Strict,Lax,None
 		response.addCookie(refreshTokenCookie);
 		
-		
+		if (isSocialLogin) {
+			response.sendRedirect("http://localhost:5173");
+			return;
+		}
 		
 		claims.put("accessToken",accessToken);
 		
 		Gson gson = new Gson();
-		
+
 		String jsonStr= gson.toJson(claims); // claims + accessToken을 json 문자열로 변환
-		
+
 		response.setContentType("application/json;charset=UTF-8");
 		PrintWriter printWriter = response.getWriter();
 		printWriter.println(jsonStr);
 		printWriter.close();
-		
 	}
 
 }

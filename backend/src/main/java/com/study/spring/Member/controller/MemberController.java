@@ -1,5 +1,6 @@
 package com.study.spring.Member.controller;
 
+import com.study.spring.Member.dto.KakaoSignUpDto;
 import com.study.spring.Member.dto.MemberDto;
 import com.study.spring.Member.dto.SignUpDto;
 import com.study.spring.Member.service.MemberService;
@@ -36,8 +37,21 @@ public class MemberController {
 		return ResponseEntity.ok("회원가입 성공");
 	}
 
+	@PatchMapping("/api/member/signup")
+	public ResponseEntity<?> completeKakaoSignup(
+			@AuthenticationPrincipal MemberDto principal,
+			@RequestBody KakaoSignUpDto kakaoSignUpDto) {
+		if(principal == null) {
+			throw new IllegalStateException("인증되지 않은 사용자입니다.");
+		}
+
+		memberService.kakaoRegister(principal.getEmail(), kakaoSignUpDto);
+
+		return ResponseEntity.ok("회원가입 성공");
+	}
+
 	@GetMapping("/api/user/info")
-	public Map<String, Object> getUserInfor(
+	public Map<String, Object> getUserInfo(
 			@AuthenticationPrincipal MemberDto principal,
 			Authentication authentication
 	) {
@@ -54,8 +68,6 @@ public class MemberController {
 
 		);
 	}
-
-
 
 	@PostMapping("/api/auth/refresh")
 	public ResponseEntity<Map<String, Object>> refreshToken(

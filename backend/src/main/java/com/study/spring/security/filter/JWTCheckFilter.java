@@ -21,13 +21,14 @@ import java.util.Map;
 public class JWTCheckFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-
-        String path = request.getRequestURI();	
+        String path = request.getRequestURI();
         log.info("shouldNotFilter check url................." + path);
 
-        if (path.startsWith("/api/member/") || path.startsWith("/api/auth/refresh")) {
-            return true;
-        }
+//        if (path.startsWith("/api/member/") || path.startsWith("/api/auth/refresh") || path.startsWith("/swagger-ui")) {
+//            return true;
+//        }
+
+        if (!path.startsWith("/api/") || path.equals("/api/auth/refresh") || path.equals("/api/member/login") || path.equals("/api/member/signup")) return true;
 
         return false;
     }

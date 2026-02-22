@@ -1,3 +1,6 @@
+import axios from 'axios';
+import { BASE_URL } from './config';
+
 /**
  * 상담 관리 API
  * TODO: 백엔드 API 구현 후 실제 엔드포인트로 교체
@@ -131,7 +134,8 @@ export const fetchAllCounsels = async () => {
       // 상담 수락됨/예정 (ACCEPTED) - 5개
       {
         id: 6,
-        title: '상담제목 : 진로 고민이 많아요. 어떤 선택을 해야 할지 모르겠어요.',
+        title:
+          '상담제목 : 진로 고민이 많아요. 어떤 선택을 해야 할지 모르겠어요.',
         client: '김민수',
         clientId: 'user-001',
         date: '26.02.05 14:00',
@@ -240,7 +244,9 @@ export const fetchCompletedCounsels = async (page = 1, limit = 10) => {
     // return await response.json();
 
     const allCounsels = await fetchAllCounsels();
-    return allCounsels.filter((counsel) => counsel.status === COUNSEL_STATUS.COMPLETED);
+    return allCounsels.filter(
+      (counsel) => counsel.status === COUNSEL_STATUS.COMPLETED,
+    );
   } catch (error) {
     console.error('fetchCompletedCounsels error:', error);
     throw error;
@@ -259,7 +265,9 @@ export const fetchPendingCounsels = async (page = 1, limit = 10) => {
 
     const allCounsels = await fetchAllCounsels();
     return allCounsels.filter(
-      (counsel) => counsel.status === COUNSEL_STATUS.PENDING || counsel.status === COUNSEL_STATUS.ACCEPTED
+      (counsel) =>
+        counsel.status === COUNSEL_STATUS.PENDING ||
+        counsel.status === COUNSEL_STATUS.ACCEPTED,
     );
   } catch (error) {
     console.error('fetchPendingCounsels error:', error);
@@ -286,7 +294,8 @@ export const fetchCounselDetail = async (counselId) => {
       reservationDate: '2026-01-14 16:00',
       status: 'scheduled', // 'scheduled' | 'inProgress' | 'completed'
       chatRoomId: `chat-${counselId}`, // 채팅방 ID
-      requestContent: '해야 할 일은 과감히 하며, 결심한 일은 반드시 실행하라. - 벤자민 프랭클린-',
+      requestContent:
+        '해야 할 일은 과감히 하며, 결심한 일은 반드시 실행하라. - 벤자민 프랭클린-',
       detailedContent:
         '우리 인생에서 해야 할 일이 참 많지요. 또 새해에 계획하고 결심한 일들도 참 많지요. 그렇지만 여건 상 못하거나 힘들어서 주춤하는 일들이많기도 합니다. 그것을 새해에 계획한 하고 정한 하지 않는다면 이후 소용도 없겠지요. 그래서 새해가 되니 힘들어하는 저에게 저 명언이 참 마음에 와 닿습니다. 오늘도 저 명언을 되새기며 새해가 계획한 일들을 실행하려고 노력해 봅니다.',
       counselor: {
@@ -308,18 +317,15 @@ export const fetchCounselDetail = async (counselId) => {
 /**
  * 상담 수락하기
  */
-export const acceptCounsel = async (counselId) => {
+export const acceptCounsel = async (cnslId, message) => {
   try {
     // TODO: 실제 API 호출로 교체
-    // const response = await fetch(`${API_BASE_URL}/counsel/${counselId}/accept`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' }
-    // });
-    // if (!response.ok) throw new Error('상담 수락 실패');
-    // return await response.json();
-
-    console.log('상담 수락:', counselId);
-    return { success: true, message: '상담이 수락되었습니다.' };
+    const response = await axios.post(`${BASE_URL}/api/approve/${cnslId}`, {
+      message,
+    });
+    if (!response.ok) throw new Error('상담 수락 실패');
+    console.log('상담 수락:', cnslId);
+    return await response.json();
   } catch (error) {
     console.error('acceptCounsel error:', error);
     throw error;
@@ -329,19 +335,16 @@ export const acceptCounsel = async (counselId) => {
 /**
  * 상담 거절하기
  */
-export const rejectCounsel = async (counselId, reason) => {
+export const rejectCounsel = async (cnslId, reason) => {
   try {
     // TODO: 실제 API 호출로 교체
-    // const response = await fetch(`${API_BASE_URL}/counsel/${counselId}/reject`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ reason })
-    // });
-    // if (!response.ok) throw new Error('상담 거절 실패');
-    // return await response.json();
+    const response = await axios.post(`${BASE_URL}/api/reject/${cnslId}`, {
+      message: reason,
+    });
 
-    console.log('상담 거절:', counselId, reason);
-    return { success: true, message: '상담이 거절되었습니다.' };
+    if (!response.ok) throw new Error('상담 거절 실패');
+    console.log('상담 거절:', cnslId, reason);
+    return await response.json();
   } catch (error) {
     console.error('rejectCounsel error:', error);
     throw error;

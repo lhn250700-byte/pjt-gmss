@@ -41,7 +41,7 @@ public class CnslController {
 		}
 	}
 	
-	// 예약 벨리데이션 체크
+	// 예약 벨리데이션 체크 [reserve 서비스 코드 내에 있긴 있음]
 	@GetMapping("/api/iscnslyn") 
 	public Optional<IsCnslDto> isCounseling(
 			@RequestParam("memberId") String memberId,

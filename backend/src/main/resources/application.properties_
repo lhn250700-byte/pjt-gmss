@@ -32,7 +32,7 @@ springdoc.swagger-ui.operations-sorter=alpha
 spring.security.oauth2.client.registration.kakao.client-id=[api key]
 spring.security.oauth2.client.registration.kakao.client-secret=[secret key]
 # 인증 서버로 요청 시 지정할 요청 메소드
-spring.security.oauth2.client.registration.kakao.client-authentication-method=POST
+spring.security.oauth2.client.registration.kakao.client-authentication-method=client_secret_post
 # 액세스 토큰 요청 시 유형을 지정하는 헤더 속성
 spring.security.oauth2.client.registration.kakao.authorization-grant-type=authorization_code
 # 사용자가 카카오로 로그인 후 돌아올 서버의 URL
