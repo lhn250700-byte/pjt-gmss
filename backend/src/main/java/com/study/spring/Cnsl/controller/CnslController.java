@@ -133,39 +133,56 @@ public class CnslController {
 //		return cnslService.findCounselingTotalCountByCounselor(cnslerId);
 //	}
 //
-//	// [상담 내역(전체) 조건 없음]
-//	@GetMapping("/api/cnslList/{cnslerId}")
-//	public ResponseEntity<Page<cnslListDto>> getMyCounselingList(
-//			@RequestParam(name="status", required = false) CounselingStatus status,
-//			@RequestParam(name="page", defaultValue = "0") int page,
-//			@RequestParam(name="size", defaultValue = "10") int size,
-//            @PathVariable String cnslerId
-//	) {
-//		Pageable pageable = PageRequest.of(page, size);
-//
-//		Page<cnslListDto> cnslPage = cnslService.findCounselingsByCounselor(status, pageable, cnslerId);
-//		if (cnslPage.isEmpty()) {
-//			return ResponseEntity.noContent().build();
-//		}
-//		return ResponseEntity.ok(cnslPage);
-//	}
-//
-//
-//	// [상담 예약 관리(수락 전)]
-//	@GetMapping("/api/cnslRsvList/{cnslerId}")
-//	public ResponseEntity<Page<cnslListWithoutStatusDto>> getPendingReservationList(
-//			@RequestParam(name="page", defaultValue = "0") int page,
-//			@RequestParam(name="size", defaultValue = "10") int size,
-//            @PathVariable String cnslerId
-//	) {
-//		Pageable pageable = PageRequest.of(page, size);
-//
-//		Page<cnslListWithoutStatusDto> rsvPage = cnslService.findPendingReservations(pageable, cnslerId);
-//		if (rsvPage.isEmpty()) {
-//			return ResponseEntity.noContent().build();
-//		}
-//		return ResponseEntity.ok(rsvPage);
-//	}
+	
+	// [전체 상담 내역]
+	@GetMapping("/api/cnslAllList/{cnslerId}")
+	public ResponseEntity<Page<cnslListDto>> getMyCounselingAllList(
+			@RequestParam(name="page", defaultValue = "0") int page,
+			@RequestParam(name="size", defaultValue = "5") int size,
+            @PathVariable("cnslerId") String cnslerId
+	) {
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<cnslListDto> cnslPage = cnslService.findAllCounselingsByCounselor(pageable, cnslerId);
+		if (cnslPage.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.ok(cnslPage);
+	}
+	
+	// [상담 상태에 따른 상담 내역(전체)]
+	@GetMapping("/api/cnslList/{cnslerId}")
+	public ResponseEntity<Page<cnslListDto>> getMyCounselingList(
+			@RequestParam(name="status", required = false) CounselingStatus status,
+			@RequestParam(name="page", defaultValue = "0") int page,
+			@RequestParam(name="size", defaultValue = "10") int size,
+			@PathVariable("cnslerId") String cnslerId
+	) {
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<cnslListDto> cnslPage = cnslService.findCounselingsByCounselor(status, pageable, cnslerId);
+		if (cnslPage.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.ok(cnslPage);
+	}
+
+
+	// [상담 예약 관리(수락 전)]
+	@GetMapping("/api/cnslRsvList/{cnslerId}")
+	public ResponseEntity<Page<cnslListWithoutStatusDto>> getPendingReservationList(
+			@RequestParam(name="page", defaultValue = "0") int page,
+			@RequestParam(name="size", defaultValue = "10") int size,
+			@PathVariable("cnslerId") String cnslerId
+	) {
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<cnslListWithoutStatusDto> rsvPage = cnslService.findPendingReservations(pageable, cnslerId);
+		if (rsvPage.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.ok(rsvPage);
+	}
 
 	// [상담 수락]
 	@PostMapping("/api/approve/{cnslId}")

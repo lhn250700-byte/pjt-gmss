@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.lang.String;
 
 import com.study.spring.Cnsl.entity.Cnsl_Resp;
+import com.study.spring.Cnsl.entity.CounselingStatus;
 import com.study.spring.Cnsl.dto.*;
 import com.study.spring.Cnsl.repository.CnslRespRepository;
 import com.study.spring.cnslInfo.entity.CnslerSchd;
@@ -19,6 +20,8 @@ import com.study.spring.wallet.repository.PointHistoryRepository;
 import com.study.spring.wallet.repository.WalletRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.study.spring.Cnsl.entity.Cnsl_Reg;
@@ -315,16 +318,21 @@ public class CnslService {
 //        return cnslRepository.getCnslTotalCount(cnslerId);
 //    }
 //
-//    // [상담 내역(전체)]
-//    public Page<cnslListDto> findCounselingsByCounselor(CounselingStatus status, Pageable pageable, String cnslerId) {
-//        String stat = status == null ? null : status.name();
-//        return cnslRepository.findCounselingsByCounselor(stat, pageable, cnslerId);
-//    }
-//
-//    // [상담 예약 관리(수락 전)]
-//    public Page<cnslListWithoutStatusDto> findPendingReservations(Pageable pageable, String cnslerId) {
-//        return cnslRepository.findPendingReservations(pageable, cnslerId);
-//    }
+    
+    // [모든 상담 내역]
+	public Page<cnslListDto> findAllCounselingsByCounselor(Pageable pageable, String cnslerId) {
+		return cnslRepository.findAllCounselingsByCounselor(pageable, cnslerId);
+	}
+    // [상담 내역(전체) stat으로 나눔]
+    public Page<cnslListDto> findCounselingsByCounselor(CounselingStatus status, Pageable pageable, String cnslerId) {
+        String stat = status == null ? null : status.name();
+        return cnslRepository.findCounselingsByCounselor(stat, pageable, cnslerId);
+    }
+
+    // [상담 예약 관리(수락 전)]
+    public Page<cnslListWithoutStatusDto> findPendingReservations(Pageable pageable, String cnslerId) {
+        return cnslRepository.findPendingReservations(pageable, cnslerId);
+    }
 
     // [상담 수락]
     @Transactional

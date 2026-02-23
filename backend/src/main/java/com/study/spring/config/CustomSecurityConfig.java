@@ -51,11 +51,11 @@
 			});
 
 
-			/*
-			 * http.authorizeHttpRequests(auth -> auth .requestMatchers( "/",
-			 * "/api/member/signup", "/api/member/login", "/api/auth/refresh" ).permitAll()
-			 * .anyRequest().authenticated() );
-			 */
+			
+			  http.authorizeHttpRequests(auth -> auth .requestMatchers( "/",
+			  "/api/member/signup", "/api/member/login", "/api/auth/refresh", "/api/auth/signout" ).permitAll()
+			  .anyRequest().authenticated() );
+			 
 
 			// 일반 로그인 필터
 			http.addFilterBefore(new JWTCheckFilter(), UsernamePasswordAuthenticationFilter.class);
