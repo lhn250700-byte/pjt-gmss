@@ -4,7 +4,6 @@ import useAuth from '../../../hooks/useAuth';
 import DashBoard from '../../admin/DashBoard';
 import CounselorDefaultPage from '../../system/info/CounselorDefaultPage';
 import { posts } from '../../user/board/boardData';
-import { refreshToken } from '../../../api/loginApi';
 
 const keywordCloud = [
   {
@@ -68,17 +67,6 @@ const scoreRecommend = (p) => p.likes * 3 + p.comments * 5 + p.views * 0.1;
 const Home = () => {
   const { user, loading } = useAuth();
   const [communityMode, setCommunityMode] = useState('realtime'); // realtime | week | month | recommend
-  const [accessToken, setAccessToken] = useState('');
-
-  useEffect(() => {
-    const getToken = async () => {
-      const data = await refreshToken();
-      if (!data) return;
-      else setAccessToken(data?.accessToken);
-    };
-
-    getToken();
-  }, []);
 
   const communityTopPosts = useMemo(() => {
     const base = posts.filter((p) => !p.isNotice);
@@ -96,14 +84,10 @@ const Home = () => {
         .slice(0, 10);
     }
     if (communityMode === 'recommend') {
-      return base
-        .sort((a, b) => scoreRecommend(b) - scoreRecommend(a))
-        .slice(0, 10);
+      return base.sort((a, b) => scoreRecommend(b) - scoreRecommend(a)).slice(0, 10);
     }
 
-    return base
-      .sort((a, b) => scoreRealtime(b) - scoreRealtime(a))
-      .slice(0, 10);
+    return base.sort((a, b) => scoreRealtime(b) - scoreRealtime(a)).slice(0, 10);
   }, [communityMode]);
 
   // TODO: DB 연동 시 실제 공지글 가져오기
@@ -154,15 +138,9 @@ const Home = () => {
               }}
             >
               <div>
-                <p className="text-sm leading-[1.4] font-semibold">
-                  우리를 망치는 것은 다른 사람들의 눈을
-                </p>
-                <p className="text-sm leading-[1.4] font-semibold">
-                  지나치게 의식하는 것이다.
-                </p>
-                <span className="block mt-2 text-[11px] font-normal opacity-90">
-                  벤자민 프랭클린 | 명언/명대사
-                </span>
+                <p className="text-sm leading-[1.4] font-semibold">우리를 망치는 것은 다른 사람들의 눈을</p>
+                <p className="text-sm leading-[1.4] font-semibold">지나치게 의식하는 것이다.</p>
+                <span className="block mt-2 text-[11px] font-normal opacity-90">벤자민 프랭클린 | 명언/명대사</span>
               </div>
             </section>
 
@@ -178,12 +156,8 @@ const Home = () => {
                 </div>
                 <div>
                   <h3 className="text-[20px] font-bold mb-1.5">고민 상담</h3>
-                  <p className="text-[13px] font-medium">
-                    혼자서 풀지 못하던 고민,
-                  </p>
-                  <p className="text-[13px] font-medium">
-                    지금 마음부터 가볍게 정리해보세요.
-                  </p>
+                  <p className="text-[13px] font-medium">혼자서 풀지 못하던 고민,</p>
+                  <p className="text-[13px] font-medium">지금 마음부터 가볍게 정리해보세요.</p>
                 </div>
               </Link>
 
@@ -197,12 +171,8 @@ const Home = () => {
                 </div>
                 <div>
                   <h3 className="text-[20px] font-bold mb-1.5">커리어 상담</h3>
-                  <p className="text-[13px] font-medium">
-                    지금의 선택이 맞는지,
-                  </p>
-                  <p className="text-[13px] font-medium">
-                    커리어 방향을 함께 점검해드려요.
-                  </p>
+                  <p className="text-[13px] font-medium">지금의 선택이 맞는지,</p>
+                  <p className="text-[13px] font-medium">커리어 방향을 함께 점검해드려요.</p>
                 </div>
               </Link>
 
@@ -216,12 +186,8 @@ const Home = () => {
                 </div>
                 <div>
                   <h3 className="text-[20px] font-bold mb-1.5">취업 상담</h3>
-                  <p className="text-[13px] font-medium">
-                    이력서부터 면접까지,
-                  </p>
-                  <p className="text-[13px] font-medium">
-                    합격에 필요한 전략을 전해드립니다.
-                  </p>
+                  <p className="text-[13px] font-medium">이력서부터 면접까지,</p>
+                  <p className="text-[13px] font-medium">합격에 필요한 전략을 전해드립니다.</p>
                 </div>
               </Link>
             </section>
@@ -284,13 +250,8 @@ const Home = () => {
               </div>
               <ol className="list-none p-0 m-0 flex flex-col gap-2">
                 {communityTopPosts.map((p, index) => (
-                  <li
-                    key={p.id}
-                    className="flex items-center gap-2.5 text-[13px] text-[#1f2937]"
-                  >
-                    <span className="font-bold text-[#4b5563] w-[26px]">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
+                  <li key={p.id} className="flex items-center gap-2.5 text-[13px] text-[#1f2937]">
+                    <span className="font-bold text-[#4b5563] w-[26px]">{String(index + 1).padStart(2, '0')}</span>
                     <Link to={`/board/view/${p.id}`} className="truncate">
                       {p.title}
                     </Link>
@@ -314,20 +275,15 @@ const Home = () => {
             >
               <div>
                 <p className="text-[18px] leading-[1.5] font-semibold mb-1">
-                  우리를 망치는 것은 다른 사람들의 눈을 지나치게 의식하는
-                  것이다.
+                  우리를 망치는 것은 다른 사람들의 눈을 지나치게 의식하는 것이다.
                 </p>
-                <span className="block text-[13px] font-normal opacity-90">
-                  벤자민 프랭클린 | 명언/명대사
-                </span>
+                <span className="block text-[13px] font-normal opacity-90">벤자민 프랭클린 | 명언/명대사</span>
               </div>
             </section>
 
             {/* QUICK TEST */}
             <section className="mb-8">
-              <h3 className="text-[20px] font-bold text-[#111827] mb-4">
-                내 취업 간단 테스트
-              </h3>
+              <h3 className="text-[20px] font-bold text-[#111827] mb-4">내 취업 간단 테스트</h3>
               <div className="grid grid-cols-3 gap-4">
                 {[
                   {
@@ -352,12 +308,8 @@ const Home = () => {
                         테스트
                       </span>
                     </div>
-                    <p className="text-[15px] font-bold text-[#111827] mb-2">
-                      {t.title}
-                    </p>
-                    <p className="text-[12px] text-[#6b7280] leading-relaxed">
-                      {t.desc}
-                    </p>
+                    <p className="text-[15px] font-bold text-[#111827] mb-2">{t.title}</p>
+                    <p className="text-[12px] text-[#6b7280] leading-relaxed">{t.desc}</p>
                   </div>
                 ))}
               </div>
@@ -366,9 +318,7 @@ const Home = () => {
             {/* MAIN CTA */}
             {/* TODO: DB 연동 시 각 버튼의 링크를 실제 상담 서비스로 연결 */}
             <section className="mb-8">
-              <h3 className="text-[20px] font-bold text-[#111827] mb-4">
-                지금 나에게 필요한 상담은 무엇인가요?
-              </h3>
+              <h3 className="text-[20px] font-bold text-[#111827] mb-4">지금 나에게 필요한 상담은 무엇인가요?</h3>
               <div className="grid grid-cols-3 gap-5">
                 {/* 고민 상담 → AI 상담 */}
                 <Link
@@ -422,9 +372,7 @@ const Home = () => {
 
             {/* KEYWORDS */}
             <section className="mb-8">
-              <h3 className="text-[20px] font-bold text-[#111827] mb-4">
-                이번 주 키워드
-              </h3>
+              <h3 className="text-[20px] font-bold text-[#111827] mb-4">이번 주 키워드</h3>
               <div className="grid grid-cols-2 gap-5">
                 <div className="relative bg-white rounded-[20px] shadow-[0_4px_16px_rgba(31,41,55,0.06)] overflow-hidden p-6 h-full min-h-[320px]">
                   {keywordCloud.map((item) => (
@@ -439,9 +387,7 @@ const Home = () => {
                 </div>
                 <div className="bg-white rounded-[20px] shadow-[0_4px_16px_rgba(31,41,55,0.06)] p-5">
                   <div className="flex items-center justify-between mb-4">
-                    <p className="text-[16px] font-bold text-[#111827]">
-                      상위 키워드 TOP 10
-                    </p>
+                    <p className="text-[16px] font-bold text-[#111827]">상위 키워드 TOP 10</p>
                     <p className="text-[12px] text-[#6b7280]">이번 주</p>
                   </div>
                   <ol className="space-y-2.5">
@@ -451,16 +397,11 @@ const Home = () => {
                       .concat(['포트폴리오'])
                       .slice(0, 10)
                       .map((t, idx) => (
-                        <li
-                          key={`${t}-${idx}`}
-                          className="flex items-center gap-3 text-[13px]"
-                        >
+                        <li key={`${t}-${idx}`} className="flex items-center gap-3 text-[13px]">
                           <span className="w-7 text-right font-bold text-[#4b5563]">
                             {String(idx + 1).padStart(2, '0')}
                           </span>
-                          <span className="flex-1 text-[#111827] font-medium">
-                            {t}
-                          </span>
+                          <span className="flex-1 text-[#111827] font-medium">{t}</span>
                           <span className="text-[#6b7280] text-[12px] font-semibold">
                             {(100 - idx * 8).toFixed(0)}%
                           </span>
@@ -476,9 +417,7 @@ const Home = () => {
               {/* 공지사항 */}
               <div className="bg-white rounded-[20px] shadow-[0_4px_16px_rgba(31,41,55,0.06)] p-5">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-[18px] font-bold text-[#111827]">
-                    공지사항
-                  </h4>
+                  <h4 className="text-[18px] font-bold text-[#111827]">공지사항</h4>
                   <Link
                     to="/board"
                     state={{ activeTab: '공지사항' }}
@@ -502,14 +441,9 @@ const Home = () => {
                         />
                       </div>
                       <div className="p-3">
-                        <p className="text-[13px] font-bold text-[#111827] line-clamp-1 mb-1">
-                          {notice.title}
-                        </p>
+                        <p className="text-[13px] font-bold text-[#111827] line-clamp-1 mb-1">{notice.title}</p>
                         <p className="text-[11px] text-[#6b7280]">
-                          {notice.author} |{' '}
-                          {new Date(notice.createdAt).toLocaleDateString(
-                            'ko-KR',
-                          )}
+                          {notice.author} | {new Date(notice.createdAt).toLocaleDateString('ko-KR')}
                         </p>
                       </div>
                     </Link>
@@ -520,9 +454,7 @@ const Home = () => {
               {/* 커뮤니티 인기글 */}
               <div className="bg-white rounded-[20px] shadow-[0_4px_16px_rgba(31,41,55,0.06)] p-5">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-[18px] font-bold text-[#111827]">
-                    커뮤니티 인기글
-                  </h4>
+                  <h4 className="text-[18px] font-bold text-[#111827]">커뮤니티 인기글</h4>
                   <Link
                     to="/board"
                     state={{ activeTab: '인기글' }}
@@ -563,10 +495,7 @@ const Home = () => {
                 </div>
                 <ol className="list-none p-0 m-0 flex flex-col gap-2.5">
                   {communityTopPosts.map((p, index) => (
-                    <li
-                      key={p.id}
-                      className="flex items-center gap-3 text-[13px] text-[#1f2937]"
-                    >
+                    <li key={p.id} className="flex items-center gap-3 text-[13px] text-[#1f2937]">
                       <span className="font-bold text-[#4b5563] w-[28px] text-center">
                         {String(index + 1).padStart(2, '0')}
                       </span>
@@ -576,9 +505,7 @@ const Home = () => {
                       >
                         {p.title}
                       </Link>
-                      <span className="text-[11px] text-[#6b7280]">
-                        👍 {p.likes}
-                      </span>
+                      <span className="text-[11px] text-[#6b7280]">👍 {p.likes}</span>
                     </li>
                   ))}
                 </ol>

@@ -36,9 +36,7 @@ export default function useAuth() {
             role: userRole,
             email: session.user.email,
             id: session.user.id,
-            nickname:
-              session.user.user_metadata?.nickname ||
-              session.user.email?.split('@')[0],
+            nickname: session.user.user_metadata?.nickname || session.user.email?.split('@')[0],
           });
         } else {
           // Supabase 세션이 없으면 더미 유저 확인 (개발/테스트용)
@@ -115,9 +113,7 @@ export default function useAuth() {
           role: userRole,
           email: session.user.email,
           id: session.user.id,
-          nickname:
-            session.user.user_metadata?.nickname ||
-            session.user.email?.split('@')[0],
+          nickname: session.user.user_metadata?.nickname || session.user.email?.split('@')[0],
         });
         // Supabase 로그인 성공 시 더미 유저는 제거
         localStorage.removeItem('dummyUser');
@@ -216,18 +212,7 @@ export default function useAuth() {
   };
 
   // 회원가입 함수
-  const signUp = async ({
-    email,
-    password,
-    nickname,
-    social,
-    gender,
-    mbti,
-    birth,
-    persona,
-    profile,
-    text,
-  }) => {
+  const signUp = async ({ email, password, nickname, social, gender, mbti, birth, persona, profile, text }) => {
     try {
       const { data } = authApi.post('/api/member/signup', {
         email,
@@ -253,34 +238,10 @@ export default function useAuth() {
 
   // 로그아웃 함수
   const signOut = async () => {
-    // try {
-    //   // Supabase 로그아웃
-    //   const { error } = await supabase.auth.signOut();
-    //   if (error) throw error;
-    //   // 더미 유저도 제거 (개발/테스트용)
-    //   localStorage.removeItem('dummyUser');
-    //   // 로그아웃 상태로 변경
-    //   setUser({
-    //     isLogin: false,
-    //     role: 'USER',
-    //     email: null,
-    //     id: null,
-    //     nickname: null,
-    //   });
-    //   return { success: true };
-    // } catch (error) {
-    //   console.error('로그아웃 오류:', error);
-    //   // 오류가 발생해도 로컬 상태는 초기화
-    //   localStorage.removeItem('dummyUser');
-    //   setUser({
-    //     isLogin: false,
-    //     role: 'USER',
-    //     email: null,
-    //     id: null,
-    //     nickname: null,
-    //   });
-    //   return { success: false, error: error.message };
-    // }
+    try {
+    } catch (error) {
+      console.error('로그아웃 실패', error);
+    }
   };
 
   return { user, loading, signIn, signUp, signOut, dummySignIn };

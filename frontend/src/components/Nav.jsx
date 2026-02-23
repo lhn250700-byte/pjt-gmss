@@ -1,11 +1,13 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import { useAuthStore } from '../store/auth.store';
 
 const Nav = () => {
   let MENUS = [];
   const { user } = useAuth();
   const location = useLocation();
+  const { loginStatus } = useAuthStore();
 
   if (location.pathname.startsWith('/member')) return null;
 
@@ -30,14 +32,14 @@ const Nav = () => {
       { label: '상담', to: '/chat' },
       { label: '게시판', to: '/board' },
       { label: 'INFO', to: '/info' },
-      { label: user.isLogin ? '마이페이지' : '로그인', to: user.isLogin ? '/mypage' : '/member/signin' }
+      { label: loginStatus ? '마이페이지' : '로그인', to: loginStatus ? '/mypage' : '/member/signin' },
     );
   } else if (user.role === 'ADMIN') {
     MENUS.push(
       { label: '대시보드', to: '/' },
       { label: '알림', to: '/alarm' },
       { label: '통계자료', to: '/stats' },
-      { label: '마이페이지', to: '/mypage' }
+      { label: '마이페이지', to: '/mypage' },
     );
   } else return;
 

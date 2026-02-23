@@ -1,20 +1,21 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
+import { useAuthStore } from '../../../store/auth.store';
+import { signOut } from '../../../axios/Auth';
 
 const UserDefaultPage = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const { nickname } = useAuthStore();
 
   // TODO: DB 연동 시 실제 사용자 포인트 조회
   const userPoints = 5000;
-  const userName = user?.email?.split('@')[0] || '홍길동';
+  const userName = nickname || '';
 
   const handleLogout = async () => {
-    const result = await signOut();
-    if (result.success) {
-      navigate('/');
-    }
+    await signOut();
+    navigate('/');
   };
 
   return (
@@ -28,7 +29,7 @@ const UserDefaultPage = () => {
             <h1 className="text-2xl font-bold text-gray-800">마이페이지</h1>
             <button
               onClick={handleLogout}
-              className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors"
+              className="cursor-pointer bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors"
             >
               로그아웃
             </button>
@@ -59,12 +60,7 @@ const UserDefaultPage = () => {
                 className="bg-transparent text-white font-semibold py-4 flex items-center justify-center gap-2 hover:bg-white/10 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4v16m8-8H4"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
                 충전
               </button>
@@ -163,19 +159,19 @@ const UserDefaultPage = () => {
       {/* PC */}
       <div className="hidden lg:block w-full min-h-screen bg-[#f3f7ff]">
         <div className="max-w-[1520px] mx-auto px-8 py-16">
-            {/* HEADER */}
-            <div className="flex items-center justify-between mb-8">
-              <h1 className="text-[30px] font-semibold text-gray-800">마이페이지</h1>
-              <button
-                onClick={handleLogout}
-                className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-10 py-3 rounded-xl text-base font-normal transition-colors"
-              >
-                로그아웃
-              </button>
-            </div>
+          {/* HEADER */}
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-[30px] font-semibold text-gray-800">마이페이지</h1>
+            <button
+              onClick={handleLogout}
+              className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-10 py-3 rounded-xl text-base font-normal transition-colors cursor-pointer"
+            >
+              로그아웃
+            </button>
+          </div>
 
-            {/* 포인트 정보 섹션 */}
-            <div className="mb-10">
+          {/* 포인트 정보 섹션 */}
+          <div className="mb-10">
             <div className="bg-[#3b82f6] rounded-3xl overflow-hidden shadow-xl">
               <div className="text-center py-12 px-10">
                 <p className="text-white text-2xl mb-4">{userName} 님의 잔액</p>
@@ -201,26 +197,21 @@ const UserDefaultPage = () => {
                   className="bg-transparent text-white font-bold px-8 py-6 flex items-center justify-center gap-3 hover:bg-white/10 transition-colors text-xl"
                 >
                   <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4v16m8-8H4"
-                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
                   충전
                 </button>
               </div>
             </div>
-            </div>
+          </div>
 
-            {/* BUTTONS GRID */}
-            <div className="grid grid-cols-2 gap-8">
-                {/* 회원정보 수정 */}
-              <Link
-                to="/mypage/editinfo"
-                className="bg-[#1e40af] hover:bg-[#1e3a8a] rounded-3xl p-12 flex flex-col items-center justify-center gap-6 shadow-lg transition-colors h-[280px]"
-              >
+          {/* BUTTONS GRID */}
+          <div className="grid grid-cols-2 gap-8">
+            {/* 회원정보 수정 */}
+            <Link
+              to="/mypage/editinfo"
+              className="bg-[#1e40af] hover:bg-[#1e3a8a] rounded-3xl p-12 flex flex-col items-center justify-center gap-6 shadow-lg transition-colors h-[280px]"
+            >
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center">
                 <svg className="w-12 h-12 text-[#1e40af]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -237,14 +228,14 @@ const UserDefaultPage = () => {
                   />
                 </svg>
               </div>
-                <span className="text-white font-bold text-2xl">회원정보 수정</span>
-              </Link>
+              <span className="text-white font-bold text-2xl">회원정보 수정</span>
+            </Link>
 
-              {/* 상담 내역 */}
-              <Link
-                to="/mypage/clist"
-                className="bg-[#3b82f6] hover:bg-[#2563eb] rounded-3xl p-12 flex flex-col items-center justify-center gap-6 shadow-lg transition-colors h-[280px]"
-              >
+            {/* 상담 내역 */}
+            <Link
+              to="/mypage/clist"
+              className="bg-[#3b82f6] hover:bg-[#2563eb] rounded-3xl p-12 flex flex-col items-center justify-center gap-6 shadow-lg transition-colors h-[280px]"
+            >
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center">
                 <svg className="w-12 h-12 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -256,14 +247,14 @@ const UserDefaultPage = () => {
                   <circle cx="12" cy="13" r="3" strokeWidth={2} />
                 </svg>
               </div>
-                <span className="text-white font-bold text-2xl">상담 내역</span>
-              </Link>
+              <span className="text-white font-bold text-2xl">상담 내역</span>
+            </Link>
 
-              {/* 내 작성 글 */}
-              <Link
-                to="/mypage/postlist"
-                className="bg-[#1e40af] hover:bg-[#1e3a8a] rounded-3xl p-12 flex flex-col items-center justify-center gap-6 shadow-lg transition-colors h-[280px]"
-              >
+            {/* 내 작성 글 */}
+            <Link
+              to="/mypage/postlist"
+              className="bg-[#1e40af] hover:bg-[#1e3a8a] rounded-3xl p-12 flex flex-col items-center justify-center gap-6 shadow-lg transition-colors h-[280px]"
+            >
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center">
                 <svg className="w-12 h-12 text-[#1e40af]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -280,14 +271,14 @@ const UserDefaultPage = () => {
                   />
                 </svg>
               </div>
-                <span className="text-white font-bold text-2xl">내 작성 글</span>
-              </Link>
+              <span className="text-white font-bold text-2xl">내 작성 글</span>
+            </Link>
 
-              {/* 내 작성 댓글 */}
-              <Link
-                to="/mypage/commentlist"
-                className="bg-[#3b82f6] hover:bg-[#2563eb] rounded-3xl p-12 flex flex-col items-center justify-center gap-6 shadow-lg transition-colors h-[280px]"
-              >
+            {/* 내 작성 댓글 */}
+            <Link
+              to="/mypage/commentlist"
+              className="bg-[#3b82f6] hover:bg-[#2563eb] rounded-3xl p-12 flex flex-col items-center justify-center gap-6 shadow-lg transition-colors h-[280px]"
+            >
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center">
                 <svg className="w-12 h-12 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -298,9 +289,9 @@ const UserDefaultPage = () => {
                   />
                 </svg>
               </div>
-                <span className="text-white font-bold text-2xl">내 작성 댓글</span>
-              </Link>
-            </div>
+              <span className="text-white font-bold text-2xl">내 작성 댓글</span>
+            </Link>
+          </div>
         </div>
       </div>
     </>

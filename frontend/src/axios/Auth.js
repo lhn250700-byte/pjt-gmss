@@ -11,15 +11,14 @@ authApi.interceptors.request.use((config) => {
 
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
-    config.headers['Content-Type'] = 'application/json';
   }
+  config.headers['Content-Type'] = 'application/json';
 
   return config;
 });
 
 export const refreshAccessToken = async () => {
-  const { setAccessToken, setLoginStatus, setEmail, clearAuth } =
-    useAuthStore.getState();
+  const { setAccessToken, setLoginStatus, setEmail, clearAuth, setNickname, setRoleName } = useAuthStore.getState();
 
   try {
     const accessToken = useAuthStore.getState().accessToken;
@@ -33,9 +32,24 @@ export const refreshAccessToken = async () => {
     setAccessToken(data.accessToken);
     setLoginStatus(true);
     setEmail(data.email);
+    setNickname(data.nickname);
+    setRoleName(data.roleNames[0]);
   } catch (error) {
     console.error('토큰 갱신 실패 : ', error);
     clearAuth();
     return null;
+  }
+};
+
+export const signOut = async () => {
+  const clearAuth = useAuthStore.getState().clearAuth;
+
+  try {
+    const { data } = await authApi.post('/api/auth/signout');
+    return data;
+  } catch (error) {
+    console.error('로그아웃 요청 실패 : ', error);
+  } finally {
+    clearAuth();
   }
 };

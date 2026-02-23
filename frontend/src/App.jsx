@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/common/home/Home';
 import Chat from './pages/user/chat/Chat';
@@ -30,11 +30,17 @@ import CounselorClientChat from './pages/system/info/CounselorClientChat';
 import ScheduleManagement from './pages/system/info/ScheduleManagement';
 import RiskCaseList from './pages/system/info/RiskCaseList';
 import { refreshAccessToken } from './axios/Auth';
+import { useAuthStore } from './store/auth.store';
 
 const App = () => {
+  const { roleName } = useAuthStore();
+  console.log(roleName);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
-    refreshAccessToken();
+    refreshAccessToken().finally(() => setIsLoading(false));
   }, []);
+
+  if (isLoading) return <div>로딩 중 ...</div>;
 
   return (
     <>
@@ -61,18 +67,18 @@ const App = () => {
         <Route
           path="/board/*"
           element={
-            <ProtectedRoute allowRoles={['USER']}>
-              <Board />
-            </ProtectedRoute>
+            <Board />
+            // <ProtectedRoute allowRoles={['USER']}>
+            // </ProtectedRoute>
           }
         />
         {/* INFO */}
         <Route
           path="/info/*"
           element={
-            <ProtectedRoute allowRoles={['USER']}>
-              <Info />
-            </ProtectedRoute>
+            <Info />
+            // <ProtectedRoute allowRoles={['USER']}>
+            // </ProtectedRoute>
           }
         />
 
