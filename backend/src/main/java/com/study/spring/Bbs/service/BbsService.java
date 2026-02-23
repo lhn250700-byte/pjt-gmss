@@ -15,7 +15,8 @@ import java.util.List;
 @Service
 @Log4j2
 public class BbsService {
-    @Autowired
+    
+	@Autowired
     BbsRepository bbsRepository;
 
     // [실시간 인기글]

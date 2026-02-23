@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
+@Builder 
 public class Bbs {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // pk, increment 대응

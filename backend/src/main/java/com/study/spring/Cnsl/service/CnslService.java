@@ -293,4 +293,10 @@ public class CnslService {
     public Page<cnslListWithoutStatusDto> findPendingReservations(Pageable pageable, String cnslerId) {
         return cnslRepository.findPendingReservations(pageable, cnslerId);
     }
+
+    // 상담 내역 상세 정보
+	public CnslDetailDto getMyCnslDetail(Integer cnslId, String memberId) {
+		return cnslRepository.getCnslDetailByCnslId(cnslId, memberId)
+				.orElseThrow(() -> new IllegalArgumentException("내역이 없거나 접근 권한이 없습니다."));
+	}
 }

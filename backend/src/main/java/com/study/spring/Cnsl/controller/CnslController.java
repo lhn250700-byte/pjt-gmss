@@ -12,8 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,11 +28,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.study.spring.Cnsl.repository.CnslRepository;
 import com.study.spring.Cnsl.service.CnslService;
+import com.study.spring.Member.dto.MemberDto;
 
 @RestController
 public class CnslController {
 	@Autowired
 	CnslService cnslService;
+	
+	@Autowired
+	CnslRepository cnslRepository;
 
 	@PostMapping("/api/reserve")
 	public ResponseEntity<?> createCounselingReservation(@RequestBody CnslReqDto cnslReqDto) {
@@ -40,41 +47,35 @@ public class CnslController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Apply failure: " + e.getMessage());
 		}
 	}
-	
+
 	// 예약 벨리데이션 체크
-	@GetMapping("/api/iscnslyn") 
-	public Optional<IsCnslDto> isCounseling(
-			@RequestParam("memberId") String memberId,
-			@RequestParam("cnslerId") String cnslerId,
-			@RequestParam("cnslDt") LocalDate cnslDt,
+	@GetMapping("/api/iscnslyn")
+	public Optional<IsCnslDto> isCounseling(@RequestParam("memberId") String memberId,
+			@RequestParam("cnslerId") String cnslerId, @RequestParam("cnslDt") LocalDate cnslDt,
 			@RequestParam("cnslStartTime") LocalTime cnslStartTime) {
-		Optional<IsCnslDto> isCounseling =  cnslService.isCounseling(memberId, cnslerId, cnslDt, cnslStartTime);
+		Optional<IsCnslDto> isCounseling = cnslService.isCounseling(memberId, cnslerId, cnslDt, cnslStartTime);
 		return isCounseling;
 	}
 
 	// 상담사의 특정 일자 예약 리스트
 	@GetMapping("/api/cnslAvailability")
-	public List<CnslerDateDto> getAvailableSlots(
-			@RequestParam("cnslerId") String cnslerId,
+	public List<CnslerDateDto> getAvailableSlots(@RequestParam("cnslerId") String cnslerId,
 			@RequestParam("cnslDt") LocalDate cnslDt) {
 
 		return cnslService.getAvailableSlotsForCnsler(cnslerId, cnslDt);
 	}
-	
+
 	@PatchMapping("/api/reserve/{cnslId}")
-	public ResponseEntity<?> updateMyCounseling(
-            @PathVariable Long cnslId,
-        @RequestBody CnslModiReqDto cnslModiReqDto
-	) {
+	public ResponseEntity<?> updateMyCounseling(@PathVariable Long cnslId, @RequestBody CnslModiReqDto cnslModiReqDto) {
 		try {
 			Long id = cnslService.modifyMyCounseling(cnslId, cnslModiReqDto);
 			return ResponseEntity.ok(id);
-			
+
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("update failure: " + e.getMessage());
 		}
 	}
-	
+
 	@PutMapping("/api/cancel/{cnslId}")
 	public ResponseEntity<?> cancelMyCounseling(@PathVariable Long cnslId) {
 		try {
@@ -83,7 +84,7 @@ public class CnslController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("delete failure: " + e.getMessage());
 		}
-		
+
 	}
 
 	// [상담사 월별 상담 건수]
@@ -101,11 +102,9 @@ public class CnslController {
 	// [상담 내역(전체) 조건 없음]
 	@GetMapping("/api/cnslList/{cnslerId}")
 	public ResponseEntity<Page<cnslListDto>> getMyCounselingList(
-			@RequestParam(name="status", required = false) CounselingStatus status,
-			@RequestParam(name="page", defaultValue = "0") int page,
-			@RequestParam(name="size", defaultValue = "10") int size,
-            @PathVariable String cnslerId
-	) {
+			@RequestParam(name = "status", required = false) CounselingStatus status,
+			@RequestParam(name = "page", defaultValue = "0") int page,
+			@RequestParam(name = "size", defaultValue = "10") int size, @PathVariable String cnslerId) {
 		Pageable pageable = PageRequest.of(page, size);
 
 		Page<cnslListDto> cnslPage = cnslService.findCounselingsByCounselor(status, pageable, cnslerId);
@@ -115,14 +114,11 @@ public class CnslController {
 		return ResponseEntity.ok(cnslPage);
 	}
 
-
 	// [상담 예약 관리(수락 전)]
 	@GetMapping("/api/cnslRsvList/{cnslerId}")
 	public ResponseEntity<Page<cnslListWithoutStatusDto>> getPendingReservationList(
-			@RequestParam(name="page", defaultValue = "0") int page,
-			@RequestParam(name="size", defaultValue = "10") int size,
-            @PathVariable String cnslerId
-	) {
+			@RequestParam(name = "page", defaultValue = "0") int page,
+			@RequestParam(name = "size", defaultValue = "10") int size, @PathVariable String cnslerId) {
 		Pageable pageable = PageRequest.of(page, size);
 
 		Page<cnslListWithoutStatusDto> rsvPage = cnslService.findPendingReservations(pageable, cnslerId);
@@ -130,5 +126,35 @@ public class CnslController {
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.ok(rsvPage);
+	}
+
+	// 상담 예약 내용 예약시 : @getmapping("/api/cnslDetail"), 진행 중 :
+	// @getmapping("/api/cnslDetail") + 채팅 내용, 완료 : @getmapping("/api/cnslDetail") +
+	// 채팅 내용 + 리뷰 작성 버튼
+
+	// 상담 리뷰 작성: @putmapping("/api/cnslreview")
+
+	// 마이페이지 상담내역
+	@GetMapping("/mypage/clist")
+	public ResponseEntity<Page<MyCnslListDto>> getMyCnslList(
+			@RequestParam("memberId") String memberId,
+			@PageableDefault(size=10, sort = "created_at", direction= Sort.Direction.DESC)
+			Pageable pageable) {
+		return ResponseEntity.ok(
+				cnslRepository.getCnslListByMemberId(memberId, pageable)
+			);
+	}
+	
+	// 마이페이지 상담내역 상세정보
+	@GetMapping("/mypage/clist/{cnslId}")
+	public ResponseEntity<CnslDetailDto> getCnslDetail(
+			@PathVariable("cnslId") Integer cnslId,
+			@RequestParam("memberId") String memberId) {
+		
+//		String email = memberdto.getEmail();
+		
+		CnslDetailDto detail = cnslService.getMyCnslDetail(cnslId, memberId);
+		
+		return ResponseEntity.ok(detail);
 	}
 }
