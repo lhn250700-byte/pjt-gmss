@@ -150,7 +150,7 @@ public class CnslService {
     public List<CnslerDateDto> getAvailableSlotsForCnsler(String cnslerId, LocalDate cnslDt) {
         List<CnslerDateDto> results = cnslRepository.getReservedInfo(cnslerId, cnslDt);
 
-        results.forEach(r -> log.info("상담사ID: {}, 날짜: {}, 시작시간: {}, 회원닉네임: {}",
+        results.forEach(r -> log.info("날짜: {}, 시작시간: {}, 회원닉네임: {}",
                 r.getCnslDt(),
                 r.getCnslStartTime(),
                 r.getNickname()

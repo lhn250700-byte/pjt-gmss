@@ -36,7 +36,9 @@ export default function useAuth() {
             role: userRole,
             email: session.user.email,
             id: session.user.id,
-            nickname: session.user.user_metadata?.nickname || session.user.email?.split('@')[0],
+            nickname:
+              session.user.user_metadata?.nickname ||
+              session.user.email?.split('@')[0],
           });
         } else {
           // Supabase 세션이 없으면 더미 유저 확인 (개발/테스트용)
@@ -113,7 +115,9 @@ export default function useAuth() {
           role: userRole,
           email: session.user.email,
           id: session.user.id,
-          nickname: session.user.user_metadata?.nickname || session.user.email?.split('@')[0],
+          nickname:
+            session.user.user_metadata?.nickname ||
+            session.user.email?.split('@')[0],
         });
         // Supabase 로그인 성공 시 더미 유저는 제거
         localStorage.removeItem('dummyUser');
@@ -212,21 +216,30 @@ export default function useAuth() {
   };
 
   // 회원가입 함수
-  const signUp = async ({ email, password, nickname, social, gender, mbti, birth, persona, profile, text }) => {
+  const signUp = async ({
+    email,
+    password,
+    nickname,
+    social = false,
+    gender = null,
+    mbti = null,
+    birth = null,
+    persona = null,
+    profile = null,
+    text = null,
+  }) => {
     try {
-      const { data } = authApi.post('/api/member/signup', {
+      const { data } = await authApi.post('/api/member/signup', {
         email,
         password,
-        metadata: {
-          nickname,
-          social,
-          gender,
-          mbti,
-          birth,
-          persona,
-          profile,
-          text,
-        },
+        nickname,
+        social,
+        gender,
+        mbti,
+        birth,
+        persona,
+        profile,
+        text,
       });
 
       console.log('회원가입 완료', data);
@@ -236,13 +249,19 @@ export default function useAuth() {
     }
   };
 
-  // 로그아웃 함수
-  const signOut = async () => {
+  // 닉네임 중복 확인 함수
+  const getmemberInfoNicknameCheckYn = async (nickname) => {
     try {
+      const { data } = await authApi.get('/api/member_InfoNicknameChk', {
+        params: {
+          nickname,
+        },
+      });
+
+      return data;
     } catch (error) {
-      console.error('로그아웃 실패', error);
+      console.error('닉네임 중복 확인 실패', error);
     }
   };
-
-  return { user, loading, signIn, signUp, signOut, dummySignIn };
+  return { user, loading, signIn, signUp, getmemberInfoNicknameCheckYn };
 }

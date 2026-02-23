@@ -31,7 +31,7 @@ public class CnslController {
 	@Autowired
 	CnslService cnslService;
 
-	@PostMapping("/api/reserve")
+	@PostMapping("/api/cnslReg_create")
 	public ResponseEntity<?> createCounselingReservation(@RequestBody CnslReqDto cnslReqDto) {
 		try {
 			Long id = cnslService.reserveCounseling(cnslReqDto);
@@ -42,7 +42,7 @@ public class CnslController {
 	}
 	
 	// 예약 벨리데이션 체크 [reserve 서비스 코드 내에 있긴 있음]
-	@GetMapping("/api/iscnslyn") 
+	@GetMapping("/api/cnslReg_reservationDuplicateChk")
 	public Optional<IsCnslDto> isCounseling(
 			@RequestParam("memberId") String memberId,
 			@RequestParam("cnslerId") String cnslerId,
@@ -53,7 +53,7 @@ public class CnslController {
 	}
 
 	// 상담사의 특정 일자 예약 리스트
-	@GetMapping("/api/cnslAvailability")
+	@GetMapping("/api/cnslReg_availableTimeList")
 	public List<CnslerDateDto> getAvailableSlots(
 			@RequestParam("cnslerId") String cnslerId,
 			@RequestParam("cnslDt") LocalDate cnslDt) {
@@ -61,7 +61,7 @@ public class CnslController {
 		return cnslService.getAvailableSlotsForCnsler(cnslerId, cnslDt);
 	}
 	
-	@PatchMapping("/api/reserve/{cnslId}")
+	@PatchMapping("/api/cnslReg_update/{cnslId}")
 	public ResponseEntity<?> updateMyCounseling(
             @PathVariable Long cnslId,
         @RequestBody CnslModiReqDto cnslModiReqDto
@@ -75,7 +75,7 @@ public class CnslController {
 		}
 	}
 	
-	@PutMapping("/api/cancel/{cnslId}")
+	@PutMapping("/api/cnslReg_cancel/{cnslId}")
 	public ResponseEntity<?> cancelMyCounseling(@PathVariable Long cnslId) {
 		try {
 			cnslService.removeMyCounseling(cnslId);
@@ -90,31 +90,31 @@ public class CnslController {
 
 	// =========== SYSTEM ===========
 	// [기간 내 상담 건수 : 상담 상태별]
-	@GetMapping("/api/consultations/status-statistics")
+	@GetMapping("/api/cnslReg_statusStatistics")
 	public ConsultationStatusCountDto getConsultationStatusCounts(@RequestParam("cnslerId") String cnslerId, @RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate) {
 		return cnslService.findConsultationStatusCounts(cnslerId, startDate, endDate);
 	}
 
 	// [기간 내 상담 건수 : 카테고리별]
-	@GetMapping("/api/consultations/category-statistics")
+	@GetMapping("/api/cnslReg_categoryStatistics")
 	public List<ConsultationCategoryCountDto> getConsultationCategoryCounts(@RequestParam("cnslerId") String cnslerId, @RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate) {
 		return cnslService.findConsultationCategoryCounts(cnslerId, startDate, endDate);
 	}
 
 	// [일자별 예약 및 완료 건수 추이]
-	@GetMapping("/api/consultations/status-statistics/daily")
+	@GetMapping("/api/cnslReg_dailyStatusStatistics")
 	public List<ConsultationStatusDailyDto> getDailyReservationCompletionTrend(@RequestParam("cnslerId") String cnslerId, @RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate) {
 		return cnslService.findDailyReservationCompletionTrend(cnslerId, startDate, endDate);
 	}
 
 	// [선택 기간 내 수익, 최근 3달 수익]
-	@GetMapping("/api/consultations/revenue")
+	@GetMapping("/api/cnslReg_revenueSummary")
 	public List<MyRevenueSummaryDto> getMyRevenueSummary(@RequestParam("cnslerId") String cnslerId, @RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate) {
 		return cnslService.findMyRevenueSummary(cnslerId, startDate, endDate);
 	}
 
 	// [가장 많은 상담 유형]
-	@GetMapping("/api/consultations/top-type")
+	@GetMapping("/api/cnslReg_topTypeStatistics")
 	public MostConsultedTypeDto getMostConsultedType(@RequestParam("cnslerId") String cnslerId, @RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate) {
 		return cnslService.findMostConsultedType(cnslerId, startDate, endDate);
 	}
@@ -135,7 +135,7 @@ public class CnslController {
 //
 	
 	// [전체 상담 내역]
-	@GetMapping("/api/cnslAllList/{cnslerId}")
+	@GetMapping("/api/cnslReg_allList/{cnslerId}")
 	public ResponseEntity<Page<cnslListDto>> getMyCounselingAllList(
 			@RequestParam(name="page", defaultValue = "0") int page,
 			@RequestParam(name="size", defaultValue = "5") int size,
@@ -151,7 +151,7 @@ public class CnslController {
 	}
 	
 	// [상담 상태에 따른 상담 내역(전체)]
-	@GetMapping("/api/cnslList/{cnslerId}")
+	@GetMapping("/api/cnslReg_statusList/{cnslerId}")
 	public ResponseEntity<Page<cnslListDto>> getMyCounselingList(
 			@RequestParam(name="status", required = false) CounselingStatus status,
 			@RequestParam(name="page", defaultValue = "0") int page,
@@ -169,7 +169,7 @@ public class CnslController {
 
 
 	// [상담 예약 관리(수락 전)]
-	@GetMapping("/api/cnslRsvList/{cnslerId}")
+	@GetMapping("/api/cnslReg_pendingReservationList/{cnslerId}")
 	public ResponseEntity<Page<cnslListWithoutStatusDto>> getPendingReservationList(
 			@RequestParam(name="page", defaultValue = "0") int page,
 			@RequestParam(name="size", defaultValue = "10") int size,
@@ -185,7 +185,7 @@ public class CnslController {
 	}
 
 	// [상담 수락]
-	@PostMapping("/api/approve/{cnslId}")
+	@PostMapping("/api/cnslReg_approve/{cnslId}")
 	public ResponseEntity<?> approveConsultation(@PathVariable Long cnslId, @RequestBody cnslRespMessageDto message) {
 		try {
 			cnslService.approveConsultation(cnslId, message.getMessage());
@@ -196,7 +196,7 @@ public class CnslController {
 	}
 
 	// [상담 거절]
-	@PostMapping("/api/reject/{cnslId}")
+	@PostMapping("/api/cnslReg_reject/{cnslId}")
 	public ResponseEntity<?> rejectConsultation(@PathVariable Long cnslId, @RequestBody cnslRespMessageDto message) {
 		try {
 			cnslService.rejectConsultation(cnslId, message.getMessage());
@@ -208,25 +208,25 @@ public class CnslController {
 
 	// =========== ADMIN ===========
 	// [기간 내 상담 건수 및 수익 : 카테고리별]
-	@GetMapping("/api/consultations/statistics/category-revenue")
+	@GetMapping("/api/cnslReg_categoryRevenueStatistics")
 	public List<CategoryRevenueStatisticsDto> getCategoryRevenueStatistics(@RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate) {
 		return cnslService.findCategoryRevenueStatistics(startDate, endDate);
 	}
 
 	// [기간 내 상담 건수 및 수익 : 상담 유형별]
-	@GetMapping("/api/consultations/statistics/type-revenue")
+	@GetMapping("/api/cnslReg_typeRevenueStatistics")
 	public List<CategoryRevenueStatisticsDto> getTypeRevenueStatistics(@RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate) {
 		return cnslService.findTypeRevenueStatistics(startDate, endDate);
 	}
 
 	// [실시간 위험 감지 및 조치 현황]
-	@GetMapping("/api/risk-detections/realtime")
+	@GetMapping("/api/bbsRisk_realtimeList")
 	public List<RealtimeRiskDetectionStatusDto> getRealtimeRiskDetectionStatus() {
 		return cnslService.findRealtimeRiskDetectionStatus();
 	}
 
 	// [정산현황 : 일자별전체 상담사 내역 관련 집계 (최근일, 상담매출액순)]
-	@GetMapping("/api/consultations/revenue/latestly")
+	@GetMapping("/api/cnslReg_latestRevenue")
 	public List<CounselorRevenueLatestlyDto> getLatestlyCounselorRevenue() {
 		return cnslService.findLatestlyCounselorRevenue();
 	}

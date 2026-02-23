@@ -44,7 +44,7 @@ public class MemberService {
         });
 
         String encode = passwordEncoder.encode(request.getPassword());
-
+        System.out.println("======================= EMAIL: =======================" + request.getEmail());
         Member member = Member
                 .builder()
                 .memberId(request.getEmail())

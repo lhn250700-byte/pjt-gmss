@@ -48,9 +48,14 @@ const SignIn = () => {
         setTimeout(() => {
           navigate('/');
         }, 1500);
+      } else {
+        const errorMessage = '로그인에 실패했습니다.';
+        console.log(errorMessage);
+        setError(errorMessage);
       }
     } catch (error) {
       const errorMessage = '로그인에 실패했습니다.';
+      console.error(error);
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -81,9 +86,14 @@ const SignIn = () => {
             <div className="w-8"></div>
           </header>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3 lg:gap-4">
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-3 lg:gap-4"
+          >
             {error && (
-              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">{error}</div>
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
+                {error}
+              </div>
             )}
 
             <div>
@@ -99,7 +109,9 @@ const SignIn = () => {
                 disabled={loading}
               />
               {error && email === '' && (
-                <p className="mt-1 text-xs lg:text-xs text-red-600">유효하지 않은 아이디입니다</p>
+                <p className="mt-1 text-xs lg:text-xs text-red-600">
+                  유효하지 않은 아이디입니다
+                </p>
               )}
             </div>
 
@@ -116,7 +128,9 @@ const SignIn = () => {
                 disabled={loading}
               />
               {error && password === '' && (
-                <p className="mt-1 text-xs lg:text-xs text-red-600">아이디 혹은 패스워드를 다시 확인해 주세요</p>
+                <p className="mt-1 text-xs lg:text-xs text-red-600">
+                  아이디 혹은 패스워드를 다시 확인해 주세요
+                </p>
               )}
             </div>
 
@@ -160,11 +174,17 @@ const SignIn = () => {
           <div className="mt-8 lg:mt-10 flex items-center justify-center gap-2 text-xs lg:text-xs text-gray-600">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-[#2ed3c6] rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm lg:text-sm">★</span>
+                <span className="text-white font-bold text-sm lg:text-sm">
+                  ★
+                </span>
               </div>
               <div>
-                <div className="text-xs lg:text-xs text-gray-600">Healing Therapy</div>
-                <div className="font-semibold text-sm lg:text-sm text-gray-700">고민순삭</div>
+                <div className="text-xs lg:text-xs text-gray-600">
+                  Healing Therapy
+                </div>
+                <div className="font-semibold text-sm lg:text-sm text-gray-700">
+                  고민순삭
+                </div>
               </div>
             </div>
           </div>
@@ -185,11 +205,15 @@ const SignIn = () => {
                 <div className="font-bold text-lg text-gray-800">고민순삭</div>
               </div>
             </div>
-            <h3 className="text-2xl lg:text-[30px] font-bold lg:font-semibold mb-3 text-gray-800">로그인 완료</h3>
-            <p className="text-sm lg:text-base text-gray-600 mb-6">정상적으로 로그인 되었습니다</p>
+            <h3 className="text-2xl lg:text-[30px] font-bold lg:font-semibold mb-3 text-gray-800">
+              로그인 완료
+            </h3>
+            <p className="text-sm lg:text-base text-gray-600 mb-6">
+              정상적으로 로그인 되었습니다
+            </p>
             <button
               onClick={() => navigate('/')}
-              className="w-full h-12 rounded-xl bg-[#2f80ed] hover:bg-[#2670d4] text-white text-sm lg:text-base font-semibold lg:font-normal transition-colors"
+              className="cursor-pointer w-full h-12 rounded-xl bg-[#2f80ed] hover:bg-[#2670d4] text-white text-sm lg:text-base font-semibold lg:font-normal transition-colors"
             >
               메인으로
             </button>

@@ -34,15 +34,16 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
 
     @Query(value = """
                 SELECT
-               cr.cnsl_dt AS cnslDt, 
+               cr.cnsl_dt AS cnslDt,
                cr.cnsl_start_time AS cnslStartTime, 
                m.nickname AS nickname
                 FROM cnsl_reg cr
-                JOIN member m ON cr.member_id = m.member_id
+                JOIN member m ON cr.cnsler_id = m.member_id
                 WHERE cr.del_yn = 'N'
-                  AND cr.cnsl_stat != 'D'      
+                  AND cr.cnsl_stat <> 'X'      
                   AND cr.cnsler_id = :cnslerId
                   AND cr.cnsl_dt = :cnslDt
+                ORDER BY cr.cnsl_start_time
             """, nativeQuery = true)
     List<CnslerDateDto> getReservedInfo(@Param("cnslerId") String cnslerId, @Param("cnslDt") LocalDate cnslDt);
 

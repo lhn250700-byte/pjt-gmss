@@ -52,9 +52,9 @@
 
 
 			
-			  http.authorizeHttpRequests(auth -> auth .requestMatchers( "/",
-			  "/api/member/signup", "/api/member/login", "/api/auth/refresh", "/api/auth/signout" ).permitAll()
-			  .anyRequest().authenticated() );
+			  http.authorizeHttpRequests(auth -> auth.requestMatchers( "/",
+			  "/api/member/signup", "/api/member/login", "/api/auth/refresh", "/api/auth/signout", "/api/member_InfoNicknameChk").permitAll()
+			  .anyRequest().authenticated());
 			 
 
 			// 일반 로그인 필터

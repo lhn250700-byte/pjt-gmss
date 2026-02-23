@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { BASE_URL } from './config';
+import { authApi } from '../axios/Auth';
 
 // 상담 예약
 export const postReservation = async ({
@@ -26,9 +27,9 @@ export const postReservation = async ({
   return cnslId;
 };
 
-// 상담 예약 시 선택한 일자에 가능한 시간대
+// 상담 예약 시 선택한 일자에 예약된 시간 리스트
 export const getAvailableSlots = async ({ cnsler_id, cnsl_dt }) => {
-  const { data } = await axios.get(`${BASE_URL}/api/cnslAvailability`, {
+  const { data } = await authApi.get(`/api/cnslReg_availableTimeList`, {
     params: {
       cnslerId: cnsler_id,
       cnslDt: cnsl_dt,

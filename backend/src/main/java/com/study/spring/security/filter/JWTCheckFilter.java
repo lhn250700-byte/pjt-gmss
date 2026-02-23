@@ -29,7 +29,14 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 //        }
 
 //        if (!path.startsWith("/api/") || path.equals("/api/auth/refresh") || path.equals("/api/member/login") || path.equals("/api/member/signup")) return true;
-          if (path.startsWith("/api/") || path.equals("/api/auth/refresh") || path.equals("/api/member/login") || path.equals("/api/member/signup")) return true;
+          if (
+                  path.startsWith("/api/") ||
+                  path.equals("/api/auth/refresh") ||
+                  path.equals("/api/member/login") ||
+                  path.equals("/api/member/signup") ||
+                  path.startsWith("/swagger-ui")
+          ) return true;
+
 
         return false;
     }

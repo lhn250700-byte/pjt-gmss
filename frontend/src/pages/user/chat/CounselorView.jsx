@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import counselors from './counselorData';
-import { postReservation } from '../../../api/cnslApi';
+import { getAvailableSlots, postReservation } from '../../../api/cnslApi';
 
 // TODO: DB 연동 가이드
 // 이 페이지는 상담사 프로필 및 예약 기능을 제공합니다
@@ -42,7 +42,6 @@ const TIME_SLOTS = [
   '17:00',
   '18:00',
   '19:00',
-  '20:00',
 ];
 
 const WEEK_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -94,35 +93,6 @@ const getMonthMatrix = (baseDate) => {
   return weeks;
 };
 
-const getDisabledSlots = (dateStr) => {
-  if (!dateStr) return new Set();
-
-  const disabled = new Set();
-  const dayNumber = Number(dateStr.split('-')[2]);
-
-  if (dayNumber % 2 === 0) {
-    disabled.add('12:00');
-    disabled.add('13:00');
-  } else {
-    disabled.add('18:00');
-    disabled.add('19:00');
-  }
-
-  const now = new Date();
-  const target = new Date(`${dateStr}T00:00:00`);
-  if (target.toDateString() === now.toDateString()) {
-    const currentHour = now.getHours();
-    TIME_SLOTS.forEach((slot) => {
-      const slotHour = Number(slot.split(':')[0]);
-      if (slotHour <= currentHour) {
-        disabled.add(slot);
-      }
-    });
-  }
-
-  return disabled;
-};
-
 const CounselorView = () => {
   const { c_id } = useParams();
   const navigate = useNavigate();
@@ -142,11 +112,67 @@ const CounselorView = () => {
     title: '',
     content: '',
   });
+
+  const [bookedSlots, setBookedSlots] = useState([]);
+  console.log('지정된 날짜', form.date);
+
+  useEffect(() => {
+    const fetchSlots = async () => {
+      if (!c_id || !form.date) {
+        console.log('응 안돼.');
+        return;
+      }
+      try {
+        const slots = await getAvailableSlots({
+          cnsler_id: c_id,
+          cnsl_dt: form.date,
+        });
+        setBookedSlots(slots); // API 결과를 state에 저장
+      } catch (err) {
+        console.error('예약된 시간 불러오기 실패:', err.message);
+      }
+    };
+    fetchSlots();
+  }, [c_id, form.date]);
+
+  const getDisabledSlots = (dateStr, bookedSlots = []) => {
+    if (!dateStr) return new Set();
+
+    const disabled = new Set();
+
+    const now = new Date();
+    const target = new Date(`${dateStr}T00:00:00`);
+    if (target.toDateString() === now.toDateString()) {
+      const currentHour = now.getHours();
+      TIME_SLOTS.forEach((slot) => {
+        const slotHour = Number(slot.split(':')[0]);
+        if (slotHour <= currentHour) {
+          disabled.add(slot);
+        }
+      });
+    }
+
+    if (bookedSlots) {
+      bookedSlots.forEach((slot) => {
+        disabled.add(
+          slot.cnslStartTime.split(':')[0] +
+            ':' +
+            slot.cnslStartTime.split(':')[1],
+        );
+      });
+    }
+
+    return disabled;
+  };
+
   const [paymentAgreements, setPaymentAgreements] = useState({
     serviceAgree: false,
     refundAgree: false,
   });
-  const disabledSlots = useMemo(() => getDisabledSlots(form.date), [form.date]);
+  const disabledSlots = useMemo(
+    () => getDisabledSlots(form.date, bookedSlots),
+    [form.date, bookedSlots],
+  );
   const monthWeeks = useMemo(
     () => getMonthMatrix(calendarMonth),
     [calendarMonth],
