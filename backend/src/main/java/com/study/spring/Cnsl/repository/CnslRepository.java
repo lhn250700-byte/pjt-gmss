@@ -195,7 +195,7 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
                 where cr.cnsl_stat not in ('X') -- 상담취소제외
                 and cr.cnsler_id = :cnslerId
                 and cr.cnsl_dt between :startDate and :endDate
-                group by cr.cnsl_dt, cr.cnsler_id, m.nickname, cr.cnsl_tp ) b
+                group by cr.cnsler_id, m.nickname, cr.cnsl_tp ) b
                 on c.code = b.cnsl_tp
        where c.col_id = 'cnsl_tp'
        order by c.code
