@@ -12,7 +12,11 @@ import { authApi } from '../axios/Auth';
  */
 
 // [기간 내 상담 건수 : 상담 상태별]
-export const fetchConsultationStatusCounts = async ({ cnslerId, startDate, endDate }) => {
+export const fetchConsultationStatusCounts = async ({
+  cnslerId,
+  startDate,
+  endDate,
+}) => {
   try {
     const { data } = await authApi.get('/api/cnslReg_statusStatistics', {
       params: {
@@ -30,7 +34,11 @@ export const fetchConsultationStatusCounts = async ({ cnslerId, startDate, endDa
 };
 
 // [기간 내 상담 건수 : 카테고리별]
-export const fetchConsultationCategoryCounts = async ({ cnslerId, startDate, endDate }) => {
+export const fetchConsultationCategoryCounts = async ({
+  cnslerId,
+  startDate,
+  endDate,
+}) => {
   try {
     const { data } = await authApi.get('/api/cnslReg_categoryStatistics', {
       params: {
@@ -48,7 +56,11 @@ export const fetchConsultationCategoryCounts = async ({ cnslerId, startDate, end
 };
 
 // [일자별 예약 및 완료 건수 추이]
-export const fetchDailyReservationCompletionTrend = async ({ cnslerId, startDate, endDate }) => {
+export const fetchDailyReservationCompletionTrend = async ({
+  cnslerId,
+  startDate,
+  endDate,
+}) => {
   try {
     const { data } = await authApi.get('/api/cnslReg_dailyStatusStatistics', {
       params: {
@@ -65,8 +77,12 @@ export const fetchDailyReservationCompletionTrend = async ({ cnslerId, startDate
   }
 };
 
-// [일자별 예약 및 완료 건수 추이]
-export const fetchMyRevenueSummary = async ({ cnslerId, startDate, endDate }) => {
+// [선택 기간 내 수익, 최근 3달 수익]
+export const fetchMyRevenueSummary = async ({
+  cnslerId,
+  startDate,
+  endDate,
+}) => {
   try {
     const { data } = await authApi.get('/api/cnslReg_revenueSummary', {
       params: {
@@ -84,7 +100,11 @@ export const fetchMyRevenueSummary = async ({ cnslerId, startDate, endDate }) =>
 };
 
 // [가장 많은 상담 유형]
-export const fetchMostConsultedType = async ({ cnslerId, startDate, endDate }) => {
+export const fetchMostConsultedType = async ({
+  cnslerId,
+  startDate,
+  endDate,
+}) => {
   try {
     const { data } = await authApi.get('/api/cnslReg_topTypeStatistics', {
       params: {
@@ -174,7 +194,12 @@ export const fetchAllCounsels = async ({ page, size, cnslerId }) => {
 /*
  * 상담 상태에 따른 리스트 가져오기 (상담 수락 = B, 상담 진행 중 = C, 상담 끝 = D)
  */
-export const fetchCounselsByStatus = async ({ page, size, status, cnslerId }) => {
+export const fetchCounselsByStatus = async ({
+  page,
+  size,
+  status,
+  cnslerId,
+}) => {
   try {
     const { data } = await authApi.get(`/api/cnslReg_statusList/${cnslerId}`, {
       params: {
@@ -196,12 +221,15 @@ export const fetchCounselsByStatus = async ({ page, size, status, cnslerId }) =>
  */
 export const fetchCounselsBeforeAccept = async ({ page, size, cnslerId }) => {
   try {
-    const { data } = await authApi.get(`/api/cnslReg_pendingReservationList/${cnslerId}`, {
-      params: {
-        page,
-        size,
+    const { data } = await authApi.get(
+      `/api/cnslReg_pendingReservationList/${cnslerId}`,
+      {
+        params: {
+          page,
+          size,
+        },
       },
-    });
+    );
 
     return data;
   } catch (error) {
@@ -229,7 +257,8 @@ export const fetchCounselDetail = async (counselId) => {
       reservationDate: '2026-01-14 16:00',
       status: 'scheduled', // 'scheduled' | 'inProgress' | 'completed'
       chatRoomId: `chat-${counselId}`, // 채팅방 ID
-      requestContent: '해야 할 일은 과감히 하며, 결심한 일은 반드시 실행하라. - 벤자민 프랭클린-',
+      requestContent:
+        '해야 할 일은 과감히 하며, 결심한 일은 반드시 실행하라. - 벤자민 프랭클린-',
       detailedContent:
         '우리 인생에서 해야 할 일이 참 많지요. 또 새해에 계획하고 결심한 일들도 참 많지요. 그렇지만 여건 상 못하거나 힘들어서 주춤하는 일들이많기도 합니다. 그것을 새해에 계획한 하고 정한 하지 않는다면 이후 소용도 없겠지요. 그래서 새해가 되니 힘들어하는 저에게 저 명언이 참 마음에 와 닿습니다. 오늘도 저 명언을 되새기며 새해가 계획한 일들을 실행하려고 노력해 봅니다.',
       counselor: {
