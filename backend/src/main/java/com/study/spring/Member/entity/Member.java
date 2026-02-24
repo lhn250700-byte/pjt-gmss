@@ -30,7 +30,6 @@ public class Member {
 	@Id
 	@Column(name = "member_id") 
 	private String memberId; // email
-	@Column(name = "password")
 	private String pw;       // 비밀번호
 	private boolean social;
 	
