@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
+import { fetchAllCounsels, fetchCounselsBeforeAccept } from '../../../api/counselApi';
+import { useAuthStore } from '../../../store/auth.store';
 
 // TODO: DB 연동 가이드
 // 이 페이지는 상담사의 수익성 분석 대시보드입니다
@@ -20,7 +22,7 @@ import useAuth from '../../../hooks/useAuth';
 //        visitCount: number,          // 방문
 //        reservationCount: number,    // 예약
 //        chatCount: number,           // 채팅
-//        
+//
 //        // 기간 내 활동 건수
 //        riskCount: number,           // 위험군 상담 건수
 //        completedConsultCount: number, // 완료 상담 건수
@@ -99,6 +101,7 @@ const MyCounsel = () => {
   const [weeklyTimeline, setWeeklyTimeline] = useState([]);
   const [counselHistory, setCounselHistory] = useState([]);
   const [reservations, setReservations] = useState([]);
+  const { email } = useAuthStore();
 
   // TODO: DB 연동 시 useEffect로 데이터 로드
   useEffect(() => {
@@ -124,47 +127,72 @@ const MyCounsel = () => {
         setLoading(false);
       }
     };
+    const getAllList = async () => {
+      const { content: data } = await fetchAllCounsels({
+        page: 0,
+        size: 5,
+        cnslerId: email,
+      });
+      setCounselHistory(data);
+      console.log('test data', data);
+    };
+
+    const getBeforAcceptList = async () => {
+      const { content: data } = await fetchCounselsBeforeAccept({
+        page: 0,
+        size: 5,
+        cnslerId: email,
+      });
+      setReservations(data);
+    };
+
+    getAllList();
+    getBeforAcceptList();
 
     // loadData(); // TODO: DB 연동 시 주석 해제
-  }, [periodFilter]);
+  }, [periodFilter, email]);
 
   // 더미 데이터 (TODO: DB 연동 시 제거)
   // 기간 내 상담 건수 데이터
-  const counselCountData = activityStats ? [
-    { label: '전체', count: activityStats.totalCount || 0, color: 'bg-blue-500' },
-    { label: '전화', count: activityStats.phoneCount || 0, color: 'bg-blue-500' },
-    { label: '위험', count: activityStats.riskCount || 0, color: 'bg-red-500' },
-    { label: '완료', count: activityStats.completedCount || 0, color: 'bg-cyan-400' },
-    { label: '상담', count: activityStats.counselingCount || 0, color: 'bg-cyan-400' },
-    { label: '방문', count: activityStats.visitCount || 0, color: 'bg-yellow-400' },
-    { label: '예약', count: activityStats.reservationCount || 0, color: 'bg-yellow-400' },
-    { label: '채팅', count: activityStats.chatCount || 0, color: 'bg-yellow-400' },
-  ] : [
-    { label: '전체', count: 66, color: 'bg-blue-500' },
-    { label: '전화', count: 66, color: 'bg-blue-500' },
-    { label: '위험', count: 10, color: 'bg-red-500' },
-    { label: '완료', count: 12, color: 'bg-cyan-400' },
-    { label: '상담', count: 12, color: 'bg-cyan-400' },
-    { label: '방문', count: 54, color: 'bg-yellow-400' },
-    { label: '예약', count: 54, color: 'bg-yellow-400' },
-    { label: '채팅', count: 54, color: 'bg-yellow-400' },
-  ];
+  const counselCountData = activityStats
+    ? [
+        { label: '전체', count: activityStats.totalCount || 0, color: 'bg-blue-500' },
+        { label: '전화', count: activityStats.phoneCount || 0, color: 'bg-blue-500' },
+        { label: '위험', count: activityStats.riskCount || 0, color: 'bg-red-500' },
+        { label: '완료', count: activityStats.completedCount || 0, color: 'bg-cyan-400' },
+        { label: '상담', count: activityStats.counselingCount || 0, color: 'bg-cyan-400' },
+        { label: '방문', count: activityStats.visitCount || 0, color: 'bg-yellow-400' },
+        { label: '예약', count: activityStats.reservationCount || 0, color: 'bg-yellow-400' },
+        { label: '채팅', count: activityStats.chatCount || 0, color: 'bg-yellow-400' },
+      ]
+    : [
+        { label: '전체', count: 66, color: 'bg-blue-500' },
+        { label: '전화', count: 66, color: 'bg-blue-500' },
+        { label: '위험', count: 10, color: 'bg-red-500' },
+        { label: '완료', count: 12, color: 'bg-cyan-400' },
+        { label: '상담', count: 12, color: 'bg-cyan-400' },
+        { label: '방문', count: 54, color: 'bg-yellow-400' },
+        { label: '예약', count: 54, color: 'bg-yellow-400' },
+        { label: '채팅', count: 54, color: 'bg-yellow-400' },
+      ];
 
   // 기간 내 활동 건수 데이터
-  const activityCountData = activityStats ? [
-    { label: '위험군 상담 건수', count: activityStats.riskCount || 0, icon: '🚨' },
-    { label: '완료 상담 건수', count: activityStats.completedConsultCount || 0, icon: '✅' },
-    { label: '예약 상담 건수', count: activityStats.reservedConsultCount || 0, icon: '📅' },
-    { label: '전체 상담 건수', count: activityStats.totalConsultCount || 0, icon: '📊' },
-  ] : [
-    { label: '위험군 상담 건수', count: 10, icon: '🚨' },
-    { label: '완료 상담 건수', count: 12, icon: '✅' },
-    { label: '예약 상담 건수', count: 54, icon: '📅' },
-    { label: '전체 상담 건수', count: 66, icon: '📊' },
-  ];
+  const activityCountData = activityStats
+    ? [
+        { label: '위험군 상담 건수', count: activityStats.riskCount || 0, icon: '🚨' },
+        { label: '완료 상담 건수', count: activityStats.completedConsultCount || 0, icon: '✅' },
+        { label: '예약 상담 건수', count: activityStats.reservedConsultCount || 0, icon: '📅' },
+        { label: '전체 상담 건수', count: activityStats.totalConsultCount || 0, icon: '📊' },
+      ]
+    : [
+        { label: '위험군 상담 건수', count: 10, icon: '🚨' },
+        { label: '완료 상담 건수', count: 12, icon: '✅' },
+        { label: '예약 상담 건수', count: 54, icon: '📅' },
+        { label: '전체 상담 건수', count: 66, icon: '📊' },
+      ];
 
   // 그래프 최대값 계산 (TODO: DB 연동 시 activityStats, counselData에서 계산)
-  const maxCounselValue = Math.max(...counselCountData.map(d => d.count), 1);
+  const maxCounselValue = Math.max(...counselCountData.map((d) => d.count), 1);
 
   const revenue = revenueData || {
     totalRevenue: 1000000,
@@ -174,53 +202,49 @@ const MyCounsel = () => {
   };
 
   // 주간 그래프 데이터 (TODO: DB 연동 시 weeklyTimeline 사용)
-  const weeklyData = weeklyTimeline.length > 0 ? weeklyTimeline.map(item => ({
-    day: item.day,
-    reservedCount: item.reservedCount,
-    completedCount: item.completedCount
-  })) : [
-    { day: '월', reservedCount: 10, completedCount: 8 },
-    { day: '화', reservedCount: 15, completedCount: 12 },
-    { day: '수', reservedCount: 20, completedCount: 15 },
-    { day: '목', reservedCount: 25, completedCount: 20 },
-    { day: '금', reservedCount: 18, completedCount: 14 },
-    { day: '토', reservedCount: 12, completedCount: 10 },
-    { day: '일', reservedCount: 8, completedCount: 6 },
-  ];
+  const weeklyData =
+    weeklyTimeline?.length > 0
+      ? weeklyTimeline.map((item) => ({
+          day: item.day,
+          reservedCount: item.reservedCount,
+          completedCount: item.completedCount,
+        }))
+      : [
+          { day: '월', reservedCount: 10, completedCount: 8 },
+          { day: '화', reservedCount: 15, completedCount: 12 },
+          { day: '수', reservedCount: 20, completedCount: 15 },
+          { day: '목', reservedCount: 25, completedCount: 20 },
+          { day: '금', reservedCount: 18, completedCount: 14 },
+          { day: '토', reservedCount: 12, completedCount: 10 },
+          { day: '일', reservedCount: 8, completedCount: 6 },
+        ];
 
-  const maxWeeklyValue = Math.max(...weeklyData.map(d => Math.max(d.reservedCount, d.completedCount)), 1);
+  const maxWeeklyValue = Math.max(...weeklyData.map((d) => Math.max(d.reservedCount, d.completedCount)), 1);
 
   // 상담 내역 더미 데이터 (TODO: DB 연동 시 counselHistory 사용)
-  const counselHistoryData = counselHistory.length > 0 ? counselHistory.map(item => ({
-    id: item.id,
-    title: item.title,
-    clientName: item.clientName,
-    date: item.date,
-    status: item.status,
-    type: item.type
-  })) : [
-    { id: 1, title: '상담 제목1 : 동물원을 만든 정말 힘들었던 시간 경험이 있어', clientName: '상담자1', date: '2026-01-12', status: '상담 예약', type: 'chat' },
-    { id: 2, title: '상담 제목2 : 동물원을 만든 정말 힘들었던 시간 경험이 있어', clientName: '상담자2', date: '2026-01-12', status: '상담 예약', type: 'call' },
-    { id: 3, title: '상담 제목3 : 동물원을 만든 정말 힘들었던 시간 경험이 있어', clientName: '상담자3', date: '2026-01-12', status: '상담 예약', type: 'visit' },
-    { id: 4, title: '상담 제목4 : 동물원을 만든 정말 힘들었던 시간 경험이 있어', clientName: '상담자4', date: '2026-01-12', status: '상담 예약', type: 'chat' },
-    { id: 5, title: '상담 제목5 : 동물원을 만든 정말 힘들었던 시간 경험이 있어', clientName: '상담자5', date: '2026-01-12', status: '상담 예약', type: 'call' },
-  ];
+  const counselHistoryData =
+    counselHistory?.length > 0
+      ? counselHistory.map((item) => ({
+          id: item.cnslId,
+          title: item.cnslTitle,
+          clientName: item.nickname,
+          date: item.dtTime,
+          status: item.statusText,
+          respYn: item.respYn,
+        }))
+      : [];
 
   // 예약 관리 더미 데이터 (TODO: DB 연동 시 reservations 사용)
-  const reservationsData = reservations.length > 0 ? reservations.map(item => ({
-    id: item.id,
-    title: item.title,
-    clientName: item.clientName,
-    date: item.date,
-    status: item.status,
-    type: item.type
-  })) : [
-    { id: 1, title: '상담 제목1 : 동물원을 만든 정말 힘들었던 시간 경험이 있어', clientName: '상담자1', date: '2026-01-12', status: '상담 예약', type: 'chat' },
-    { id: 2, title: '상담 제목2 : 동물원을 만든 정말 힘들었던 시간 경험이 있어', clientName: '상담자2', date: '2026-01-12', status: '상담 예약', type: 'call' },
-    { id: 3, title: '상담 제목3 : 동물원을 만든 정말 힘들었던 시간 경험이 있어', clientName: '상담자3', date: '2026-01-12', status: '상담 예약', type: 'visit' },
-    { id: 4, title: '상담 제목4 : 동물원을 만든 정말 힘들었던 시간 경험이 있어', clientName: '상담자4', date: '2026-01-12', status: '상담 예약', type: 'chat' },
-    { id: 5, title: '상담 제목5 : 동물원을 만든 정말 힘들었던 시간 경험이 있어', clientName: '상담자5', date: '2026-01-12', status: '상담 예약', type: 'call' },
-  ];
+  const reservationsData =
+    reservations?.length > 0
+      ? reservations.map((item) => ({
+          id: item.cnslId,
+          title: item.cnslTitle,
+          clientName: item.nickname,
+          date: item.dtTime,
+          status: '상담 예약',
+        }))
+      : [];
 
   // 핸들러 함수들
   const handleViewAllHistory = () => {
@@ -228,7 +252,7 @@ const MyCounsel = () => {
   };
 
   const handleViewAllReservations = () => {
-    navigate('/system/info/counsel-history-list');
+    navigate('/system/info/counsel-reservation-list');
   };
 
   const handleViewDetail = (counselId) => {
@@ -267,7 +291,7 @@ const MyCounsel = () => {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-[24px] font-semibold text-gray-800">활동 내역 요약</h2>
-              
+
               {/* 기간 필터 버튼 */}
               <div className="flex items-center gap-3">
                 {['전체', '이번주', '이번달', '3개월'].map((filter) => (
@@ -285,7 +309,7 @@ const MyCounsel = () => {
                 ))}
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-6 mb-8">
               {/* 기간 내 상담 건수 */}
               <div className="bg-white rounded-2xl shadow-sm p-8">
@@ -294,17 +318,22 @@ const MyCounsel = () => {
                   {counselCountData.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-2">
                       <span className="text-sm text-gray-700 font-medium min-w-[45px]">{item.label} :</span>
-                      <span className={`text-base font-bold ${
-                        item.label === '전체' || item.label === '전화' ? 'text-blue-600' :
-                        item.label === '위험' ? 'text-red-600' :
-                        item.label === '완료' || item.label === '상담' ? 'text-cyan-600' :
-                        'text-yellow-600'
-                      }`}>
+                      <span
+                        className={`text-base font-bold ${
+                          item.label === '전체' || item.label === '전화'
+                            ? 'text-blue-600'
+                            : item.label === '위험'
+                              ? 'text-red-600'
+                              : item.label === '완료' || item.label === '상담'
+                                ? 'text-cyan-600'
+                                : 'text-yellow-600'
+                        }`}
+                      >
                         {item.count}
                       </span>
                       <div className="flex-1">
                         <div className="h-5 bg-gray-200 rounded overflow-hidden">
-                          <div 
+                          <div
                             className={`h-full transition-all duration-500 ${item.color}`}
                             style={{ width: `${(item.count / maxCounselValue) * 100}%` }}
                           ></div>
@@ -350,7 +379,7 @@ const MyCounsel = () => {
                     <span className="text-4xl">💰</span>
                   </div>
                 </div>
-                
+
                 {/* 수익 정보 */}
                 <div className="flex-1 grid grid-cols-4 gap-6">
                   <div>
@@ -424,7 +453,7 @@ const MyCounsel = () => {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-[24px] font-semibold text-gray-800">내 상담 내역</h2>
-              <button 
+              <button
                 onClick={handleViewAllHistory}
                 className="px-6 py-2 rounded-xl bg-[#2563eb] text-white text-base font-medium hover:bg-[#1d4ed8] transition-colors"
               >
@@ -433,8 +462,8 @@ const MyCounsel = () => {
             </div>
             <div className="space-y-4">
               {counselHistoryData.map((item, idx) => (
-                <div 
-                  key={item.id} 
+                <div
+                  key={item.id}
                   onClick={() => handleViewDetail(item.id)}
                   className={`bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between cursor-pointer hover:shadow-lg transition-all ${
                     idx === 0 ? 'bg-cyan-50' : idx === 1 ? 'bg-blue-50' : idx === 2 ? 'bg-orange-50' : ''
@@ -442,22 +471,43 @@ const MyCounsel = () => {
                 >
                   <div className="flex-1">
                     <h3 className="text-base font-medium text-gray-800 mb-2">{item.title}</h3>
-                    <div className="flex items-center gap-6 text-sm text-gray-600">
+                    <div className="flex flex-col gap-2.5 text-sm text-gray-600">
                       <span>상담자 : {item.clientName}</span>
-                      <span>상담 : {item.status}</span>
+                      <div className="flex justify-between">
+                        <span>
+                          상태 :{' '}
+                          <span
+                            className={
+                              item.status === '상담 예정'
+                                ? 'text-[#2563eb]'
+                                : item.status === '상담 진행 중'
+                                  ? 'text-[#ff8d28]'
+                                  : 'text-chat'
+                            }
+                          >
+                            {item.status}
+                          </span>
+                        </span>
+                        <span className="text-[#ff8d28] mr-12.5">
+                          {item.respYn === '답변 필요' ? '답변 필요' : null}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-500">
+                        {item.status === '상담 완료' ? '완료 일시' : '예약 일시'} : {item.date}
+                      </p>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">예약일시 : {item.date}</p>
                   </div>
-                  <button 
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleViewDetail(item.id);
                     }}
                     className={`px-8 py-3 rounded-xl text-white text-base font-medium transition-colors ${
-                      idx === 0 ? 'bg-cyan-400 hover:bg-cyan-500' : 
-                      idx === 1 ? 'bg-blue-500 hover:bg-blue-600' : 
-                      idx === 2 ? 'bg-orange-400 hover:bg-orange-500' :
-                      'bg-blue-500 hover:bg-blue-600'
+                      item.status === '상담 예정'
+                        ? 'bg-[#2563eb] hover:bg-blue-600'
+                        : item.status === '상담 진행 중'
+                          ? 'bg-[#ff8d28] hover:bg-orange-500'
+                          : 'bg-chat hover:bg-cyan-500'
                     }`}
                   >
                     {item.status}
@@ -471,7 +521,7 @@ const MyCounsel = () => {
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-[24px] font-semibold text-gray-800">상담 예약 관리</h2>
-              <button 
+              <button
                 onClick={handleViewAllReservations}
                 className="px-6 py-2 rounded-xl bg-[#2563eb] text-white text-base font-medium hover:bg-[#1d4ed8] transition-colors"
               >
@@ -480,25 +530,27 @@ const MyCounsel = () => {
             </div>
             <div className="space-y-4">
               {reservationsData.map((item) => (
-                <div 
-                  key={item.id} 
+                <div
+                  key={item.id}
                   onClick={() => handleViewDetail(item.id)}
                   className="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between cursor-pointer hover:shadow-lg transition-all"
                 >
                   <div className="flex-1">
                     <h3 className="text-base font-medium text-gray-800 mb-2">{item.title}</h3>
-                    <div className="flex items-center gap-6 text-sm text-gray-600">
+                    <div className="flex flex-col gap-2.5 text-sm text-gray-600">
                       <span>상담자 : {item.clientName}</span>
-                      <span>상담 : {item.status}</span>
+                      <span>
+                        상태 : <span className="text-[#2563eb]">{item.status}</span>
+                      </span>
+                      <p className="text-sm text-gray-500">예약 일시 : {item.date}</p>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">예약일시 : {item.date}</p>
                   </div>
-                  <button 
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleViewDetail(item.id);
                     }}
-                    className="px-8 py-3 rounded-xl bg-blue-500 text-white text-base font-medium hover:bg-blue-600 transition-colors"
+                    className="px-8 py-3 rounded-xl bg-[#2563eb] text-white text-base font-medium hover:bg-blue-600 transition-colors"
                   >
                     {item.status}
                   </button>

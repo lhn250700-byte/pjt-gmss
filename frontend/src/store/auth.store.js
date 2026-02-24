@@ -12,6 +12,6 @@ export const useAuthStore = create((set) => ({
   setLoginStatus: (loginStatus) => set({ loginStatus }),
   setNickname: (nickname) => set({ nickname }),
   setRoleName: (roleName) => set({ roleName }),
-  clearAuth: () => set({ accessToken: null, email: null, loginStatus: false }),
+  clearAuth: () => set({ accessToken: null, email: null, loginStatus: false, roleName: null }),
   // setUserInfo: (userInfo) => set({ userInfo }),
 }));

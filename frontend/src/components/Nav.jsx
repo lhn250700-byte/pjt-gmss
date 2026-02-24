@@ -5,9 +5,8 @@ import { useAuthStore } from '../store/auth.store';
 
 const Nav = () => {
   let MENUS = [];
-  const { user } = useAuth();
   const location = useLocation();
-  const { loginStatus } = useAuthStore();
+  const { loginStatus, roleName } = useAuthStore();
 
   if (location.pathname.startsWith('/member')) return null;
 
@@ -22,11 +21,11 @@ const Nav = () => {
   }
 
   // 상담사(SYSTEM) 역할은 네비게이션 바 표시 안 함
-  if (user.role === 'SYSTEM') {
-    return null;
+  if (roleName === 'SYSTEM') {
+    return;
   }
 
-  if (user.role === 'USER') {
+  if (roleName === 'USER' || !roleName) {
     MENUS.push(
       { label: '홈', to: '/' },
       { label: '상담', to: '/chat' },
@@ -34,9 +33,9 @@ const Nav = () => {
       { label: 'INFO', to: '/info' },
       { label: loginStatus ? '마이페이지' : '로그인', to: loginStatus ? '/mypage' : '/member/signin' },
     );
-  } else if (user.role === 'ADMIN') {
+  } else if (roleName === 'ADMIN') {
     MENUS.push(
-      { label: '대시보드', to: '/' },
+      { label: '대시보드', to: '/admin' },
       { label: '알림', to: '/alarm' },
       { label: '통계자료', to: '/stats' },
       { label: '마이페이지', to: '/mypage' },

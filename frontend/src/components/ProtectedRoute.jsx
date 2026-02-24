@@ -3,9 +3,8 @@ import useAuth from '../hooks/useAuth';
 import { useAuthStore } from '../store/auth.store';
 
 export default function ProtectedRoute({ children, allowRoles }) {
-  const { user, loading } = useAuth();
-  const { email, loginStatus, roleName } = useAuthStore();
-  console.log(roleName);
+  const { loading } = useAuth();
+  const { roleName, accessToken } = useAuthStore();
 
   // 로딩 중일 때는 아무것도 표시하지 않음
   if (loading) {
@@ -20,7 +19,7 @@ export default function ProtectedRoute({ children, allowRoles }) {
   }
 
   // 로그인하지 않은 경우
-  if (!loginStatus) {
+  if (!accessToken) {
     return <Navigate to="/member/signin" replace />;
   }
 

@@ -1,26 +1,106 @@
 import axios from 'axios';
 import { BASE_URL } from './config';
+import { authApi } from '../axios/Auth';
 
 /**
  * 상담 관리 API
  * TODO: 백엔드 API 구현 후 실제 엔드포인트로 교체
  */
 
-// 상담 상태 상수
-export const COUNSEL_STATUS = {
-  PENDING: 'pending', // 대기 중 (수락/거절 전)
-  ACCEPTED: 'accepted', // 수락됨 (예정)
-  COMPLETED: 'completed', // 완료됨
-  CANCELLED: 'cancelled', // 취소됨
-  REJECTED: 'rejected', // 거절됨
-};
-
-// API Base URL (환경 변수로 관리 권장)
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
-
 /**
  * 통계 데이터 가져오기
  */
+
+// [기간 내 상담 건수 : 상담 상태별]
+export const fetchConsultationStatusCounts = async ({ cnslerId, startDate, endDate }) => {
+  try {
+    const { data } = await authApi.get('/api/cnslReg_statusStatistics', {
+      params: {
+        cnslerId,
+        startDate,
+        endDate,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error('fetchConsultationStatusCounts error:', error);
+    throw error;
+  }
+};
+
+// [기간 내 상담 건수 : 카테고리별]
+export const fetchConsultationCategoryCounts = async ({ cnslerId, startDate, endDate }) => {
+  try {
+    const { data } = await authApi.get('/api/cnslReg_categoryStatistics', {
+      params: {
+        cnslerId,
+        startDate,
+        endDate,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error('fetchConsultationCategoryCounts error:', error);
+    throw error;
+  }
+};
+
+// [일자별 예약 및 완료 건수 추이]
+export const fetchDailyReservationCompletionTrend = async ({ cnslerId, startDate, endDate }) => {
+  try {
+    const { data } = await authApi.get('/api/cnslReg_dailyStatusStatistics', {
+      params: {
+        cnslerId,
+        startDate,
+        endDate,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error('fetchDailyReservationCompletionTrend error:', error);
+    throw error;
+  }
+};
+
+// [일자별 예약 및 완료 건수 추이]
+export const fetchMyRevenueSummary = async ({ cnslerId, startDate, endDate }) => {
+  try {
+    const { data } = await authApi.get('/api/cnslReg_revenueSummary', {
+      params: {
+        cnslerId,
+        startDate,
+        endDate,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error('fetchMyRevenueSummary error:', error);
+    throw error;
+  }
+};
+
+// [가장 많은 상담 유형]
+export const fetchMostConsultedType = async ({ cnslerId, startDate, endDate }) => {
+  try {
+    const { data } = await authApi.get('/api/cnslReg_topTypeStatistics', {
+      params: {
+        cnslerId,
+        startDate,
+        endDate,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error('fetchMostConsultedType error:', error);
+    throw error;
+  }
+};
+
 export const fetchCounselStats = async () => {
   try {
     // TODO: 실제 API 호출로 교체
@@ -77,7 +157,7 @@ export const fetchCounselTimeline = async () => {
  */
 export const fetchAllCounsels = async ({ page, size, cnslerId }) => {
   try {
-    const { data } = await axios.get(`${BASE_URL}/api/cnslRsvList/${cnslerId}`, {
+    const { data } = await authApi.get(`/api/cnslReg_allList/${cnslerId}`, {
       params: {
         page,
         size,
@@ -96,7 +176,7 @@ export const fetchAllCounsels = async ({ page, size, cnslerId }) => {
  */
 export const fetchCounselsByStatus = async ({ page, size, status, cnslerId }) => {
   try {
-    const { data } = await axios.get(`${BASE_URL}/api/cnslList/${cnslerId}`, {
+    const { data } = await authApi.get(`/api/cnslReg_statusList/${cnslerId}`, {
       params: {
         page,
         size,
@@ -111,9 +191,12 @@ export const fetchCounselsByStatus = async ({ page, size, status, cnslerId }) =>
   }
 };
 
+/*
+ * 상담 수락 전 리스트 가져오기
+ */
 export const fetchCounselsBeforeAccept = async ({ page, size, cnslerId }) => {
   try {
-    const { data } = await axios.get(`${BASE_URL}/api/cnslRsvList/${cnslerId}`, {
+    const { data } = await authApi.get(`/api/cnslReg_pendingReservationList/${cnslerId}`, {
       params: {
         page,
         size,

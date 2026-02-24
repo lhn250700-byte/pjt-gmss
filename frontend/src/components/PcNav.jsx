@@ -5,11 +5,11 @@ import { useAuthStore } from '../store/auth.store';
 
 const PcNav = () => {
   let MENUS = [];
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const location = useLocation();
-  const { loginStatus } = useAuthStore();
+  const { loginStatus, roleName } = useAuthStore();
 
-  if (user.role === 'USER') {
+  if (roleName === 'USER' || !roleName) {
     MENUS.push(
       { label: 'Home', to: '/' },
       { label: '상담', to: '/chat' },
@@ -17,12 +17,11 @@ const PcNav = () => {
       { label: 'INFO', to: '/info' },
       { label: loginStatus ? '마이페이지' : '로그인', to: loginStatus ? '/mypage' : '/member/signin' },
     );
-  } else if (user.role === 'COUNSELOR') {
+  } else if (roleName === 'SYSTEM') {
+    if (location.pathname === '/system/mypage') return null;
     MENUS.push({ label: '마이페이지', to: '/system/mypage' });
-  } else if (user.role === 'ADMIN') {
+  } else if (roleName === 'ADMIN') {
     MENUS.push({ label: '마이페이지', to: '/admin' });
-  } else {
-    return null;
   }
 
   return (
@@ -30,7 +29,10 @@ const PcNav = () => {
       <div className="max-w-[1520px] mx-auto px-8">
         <div className="flex items-center justify-between h-[60px]">
           {/* 로고 영역 */}
-          <NavLink to="/" className="flex items-center gap-2.5">
+          <NavLink
+            to={roleName === 'SYSTEM' ? '/system/mypage' : roleName === 'ADMIN' ? '/admin' : '/'}
+            className="flex items-center gap-2.5"
+          >
             <div className="flex items-center gap-1.5">
               <span className="text-white text-[26px] leading-none font-bold">★</span>
               <span className="text-white text-[26px] font-bold tracking-tight">고민순삭</span>
