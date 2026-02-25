@@ -26,12 +26,9 @@ const SignUp = () => {
   };
 
   const handleNickname = async () => {
-    const { userInfoNicknameCheckYn: result } =
-      await getmemberInfoNicknameCheckYn(formData.nickname);
+    const { userInfoNicknameCheckYn: result } = await getmemberInfoNicknameCheckYn(formData.nickname);
     if (result === 'Y') {
-      alert(
-        '해당 닉네임은 이미 등록되어 있습니다. 고유한 닉네임을 입력해주세요.',
-      );
+      alert('해당 닉네임은 이미 등록되어 있습니다. 고유한 닉네임을 입력해주세요.');
       return;
     } else alert('사용 가능한 닉네임입니다.');
   };
@@ -87,10 +84,7 @@ const SignUp = () => {
         <div className="px-6 pt-6 pb-28 lg:px-12 lg:py-10">
           {/* Header - PC에서 숨김 */}
           <header className="flex lg:hidden items-center gap-2 mb-4">
-            <Link
-              to="/member/signin"
-              className="text-2xl leading-none text-gray-700"
-            >
+            <Link to="/member/signin" className="text-2xl leading-none text-gray-700">
               ←
             </Link>
             <div className="flex-1 flex items-center justify-center gap-2">
@@ -112,10 +106,7 @@ const SignUp = () => {
             </div>
           )}
 
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-3 lg:gap-4"
-          >
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3 lg:gap-4">
             <div>
               <label className="block text-sm lg:text-base font-semibold lg:font-normal mb-2 text-gray-700">
                 이메일 *
@@ -131,9 +122,7 @@ const SignUp = () => {
                 required
               />
               {error && !formData.email && (
-                <p className="mt-1 text-xs lg:text-xs text-red-600">
-                  유효하지 않은 이메일입니다
-                </p>
+                <p className="mt-1 text-xs lg:text-xs text-red-600">유효하지 않은 이메일입니다</p>
               )}
             </div>
 
@@ -163,8 +152,7 @@ const SignUp = () => {
               </div>
               {error && !formData.nickname && (
                 <p className="mt-1 text-xs lg:text-xs text-red-600">
-                  사용할 수 없는 닉네임입니다 / 4자 이상 12자 이하의 닉네임을
-                  사용해 주세요
+                  사용할 수 없는 닉네임입니다 / 4자 이상 12자 이하의 닉네임을 사용해 주세요
                 </p>
               )}
             </div>
@@ -184,7 +172,7 @@ const SignUp = () => {
                 required
               />
               <p className="mt-1 text-xs lg:text-xs text-gray-600">
-                비밀번호는 8자 이상 대/소문자 및 특수문자를 포함하여야 합니다
+                비밀번호는 6자 이상 대/소문자 및 특수문자를 포함하여야 합니다
               </p>
             </div>
 
@@ -202,13 +190,9 @@ const SignUp = () => {
                 disabled={loading}
                 required
               />
-              {formData.password &&
-                formData.passwordConfirm &&
-                formData.password !== formData.passwordConfirm && (
-                  <p className="mt-1 text-xs lg:text-xs text-red-600">
-                    비밀번호가 틀립니다. 다시 확인해 주세요
-                  </p>
-                )}
+              {formData.password && formData.passwordConfirm && formData.password !== formData.passwordConfirm && (
+                <p className="mt-1 text-xs lg:text-xs text-red-600">비밀번호가 틀립니다. 다시 확인해 주세요</p>
+              )}
             </div>
 
             <div>
@@ -225,9 +209,7 @@ const SignUp = () => {
                 disabled={loading}
                 required
               />
-              <p className="mt-1 text-xs lg:text-sm text-red-600">
-                생년월일은 '-'를 제외한 8자리 입력해주세요
-              </p>
+              <p className="mt-1 text-xs lg:text-sm text-red-600">생년월일은 '-'를 제외한 8자리 입력해주세요</p>
             </div>
 
             <div>
@@ -270,15 +252,12 @@ const SignUp = () => {
                   (단축창)
                 </button>
               </div>
-              <p className="mt-1 text-xs lg:text-xs text-gray-600">
-                필수 입력입니다.
-              </p>
+              <p className="mt-1 text-xs lg:text-xs text-gray-600">필수 입력입니다.</p>
             </div>
 
             <div>
               <label className="block text-sm lg:text-base font-semibold lg:font-normal mb-2 text-gray-700">
-                자기 소개(메모스타){' '}
-                <span className="text-blue-600">(선택)</span>
+                자기 소개(메모스타) <span className="text-blue-600">(선택)</span>
               </label>
               <textarea
                 name="introduction"
@@ -307,9 +286,7 @@ const SignUp = () => {
               </div>
               <div>
                 <div className="text-xs text-gray-600">Healing Therapy</div>
-                <div className="font-semibold text-sm text-gray-700">
-                  고민순삭
-                </div>
+                <div className="font-semibold text-sm text-gray-700">고민순삭</div>
               </div>
             </div>
           </div>
@@ -330,12 +307,8 @@ const SignUp = () => {
                 <div className="font-bold text-lg text-gray-800">고민순삭</div>
               </div>
             </div>
-            <h3 className="text-2xl lg:text-[30px] font-bold lg:font-semibold mb-3 text-gray-800">
-              회원 가입 완료
-            </h3>
-            <p className="text-sm lg:text-base text-gray-600 mb-6">
-              정상적으로 회원 가입이 완료되었습니다
-            </p>
+            <h3 className="text-2xl lg:text-[30px] font-bold lg:font-semibold mb-3 text-gray-800">회원 가입 완료</h3>
+            <p className="text-sm lg:text-base text-gray-600 mb-6">정상적으로 회원 가입이 완료되었습니다</p>
             <button className="block w-full h-12 rounded-xl bg-[#2f80ed] hover:bg-[#2670d4] text-white text-sm lg:text-base font-semibold lg:font-normal leading-[3rem] transition-colors cursor-pointer">
               <Link to="/member/signin" onClick={() => setIsSuccessOpen(false)}>
                 로그인으로

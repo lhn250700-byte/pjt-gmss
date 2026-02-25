@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { BASE_URL } from './config';
+import { authApi } from '../axios/Auth';
 
 // [기간 내 상담 건수 및 수익 : 카테고리별]
 export const getCategoryRevenueStatistics = async ({ startDate, endDate }) => {
   try {
-    const { data } = await axios.get(`${BASE_URL}/api/consultations/statistics/category-revenue`, {
+    const { data } = await authApi.get(`/api/cnslReg_categoryRevenueStatistics`, {
       params: {
         startDate,
         endDate,
@@ -21,7 +22,7 @@ export const getCategoryRevenueStatistics = async ({ startDate, endDate }) => {
 // [기간 내 상담 건수 및 수익 : 상담 유형별]
 export const getTypeRevenueStatistics = async ({ startDate, endDate }) => {
   try {
-    const { data } = await axios.get(`${BASE_URL}/api/consultations/statistics/type-revenue`, {
+    const { data } = await authApi.get(`/api/cnslReg_typeRevenueStatistics`, {
       params: {
         startDate,
         endDate,
@@ -38,7 +39,7 @@ export const getTypeRevenueStatistics = async ({ startDate, endDate }) => {
 // [실시간 위험 감지 및 조치 현황]
 export const getRealtimeRiskDetectionStatus = async () => {
   try {
-    const { data } = await axios.get(`${BASE_URL}/api/risk-detections/realtime`);
+    const { data } = await authApi.get(`/api/bbsRisk_realtimeList`);
 
     return data;
   } catch (error) {
@@ -50,7 +51,7 @@ export const getRealtimeRiskDetectionStatus = async () => {
 // [정산현황 : 일자별전체 상담사 내역 관련 집계 (최근일, 상담매출액순)]
 export const getLatestlyCounselorRevenue = async () => {
   try {
-    const { data } = await axios.get(`${BASE_URL}/api/consultations/revenue/latestly`);
+    const { data } = await authApi.get(`/api/cnslReg_latestRevenue`);
     return data;
   } catch (error) {
     console.error('getLatestlyCounselorRevenue error:', error);

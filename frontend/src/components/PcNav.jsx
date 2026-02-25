@@ -30,7 +30,7 @@ const PcNav = () => {
         <div className="flex items-center justify-between h-[60px]">
           {/* 로고 영역 */}
           <NavLink
-            to={roleName === 'SYSTEM' ? '/system/mypage' : roleName === 'ADMIN' ? '/admin' : '/'}
+            to={roleName === 'SYSTEM' ? '/system/mypage' : roleName === 'ADMIN' ? '/alarm' : '/'}
             className="flex items-center gap-2.5"
           >
             <div className="flex items-center gap-1.5">

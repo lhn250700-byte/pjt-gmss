@@ -165,6 +165,8 @@ const MyCounsel = () => {
         size: 5,
         cnslerId: email,
       });
+
+      console.log(data);
       setCounselHistory(data);
     };
 
@@ -218,6 +220,7 @@ const MyCounsel = () => {
         startDate: formatDate(startDate),
         endDate: formatDate(endDate),
       });
+
       setRevenueData(data);
     };
 
@@ -229,7 +232,6 @@ const MyCounsel = () => {
         endDate: formatDate(endDate),
       });
 
-      console.log(data);
       setTopCnslType(data);
     };
 
@@ -274,7 +276,7 @@ const MyCounsel = () => {
         {
           label: '채팅',
           count: activityStatsCate[3]?.cnslCount || 0,
-          color: 'text-cyan-600',
+          color: 'bg-cyan-400',
         },
         {
           label: '예약',
@@ -375,10 +377,7 @@ const MyCounsel = () => {
     return found ? { ...dayItem, ...found } : dayItem;
   });
 
-  const maxWeeklyValue = Math.max(
-    ...weeklyData.map((d) => Math.max(d.reservedCount, d.completedCount)),
-    1,
-  );
+  const maxWeeklyValue = Math.max(...weeklyData.map((d) => Math.max(d.reservedCount, d.completedCount)), 1);
 
   // 상담 내역 더미 데이터 (TODO: DB 연동 시 counselHistory 사용)
   const counselHistoryData =
@@ -437,9 +436,7 @@ const MyCounsel = () => {
         <div className="max-w-[1520px] mx-auto px-8 py-16">
           {/* HEADER */}
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-[30px] font-semibold text-gray-800">
-              상담 내역
-            </h1>
+            <h1 className="text-[30px] font-semibold text-gray-800">상담 내역</h1>
             <button
               onClick={() => navigate('/system/mypage')}
               className="px-8 py-3 rounded-xl bg-[#2563eb] text-white text-base font-normal hover:bg-[#1d4ed8] transition-colors"
@@ -451,9 +448,7 @@ const MyCounsel = () => {
           {/* 활동 내역 요약 */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-[24px] font-semibold text-gray-800">
-                활동 내역 요약
-              </h2>
+              <h2 className="text-[24px] font-semibold text-gray-800">활동 내역 요약</h2>
 
               {/* 기간 필터 버튼 */}
               <div className="flex items-center gap-3">
@@ -476,15 +471,11 @@ const MyCounsel = () => {
             <div className="grid grid-cols-2 gap-6 mb-8">
               {/* 기간 내 상담 건수 */}
               <div className="bg-white rounded-2xl shadow-sm p-8">
-                <h3 className="text-[20px] font-bold text-gray-800 mb-6">
-                  기간 내 상담 건수
-                </h3>
+                <h3 className="text-[20px] font-bold text-gray-800 mb-6">기간 내 상담 건수</h3>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                   {counselCountData.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-2">
-                      <span className="text-sm text-gray-700 font-medium min-w-[45px]">
-                        {item.label} :
-                      </span>
+                      <span className="text-sm text-gray-700 font-medium min-w-[45px]">{item.label} :</span>
                       <span
                         className={`text-base font-bold ${
                           item.label === '전체' || item.label === '화상'
@@ -516,9 +507,7 @@ const MyCounsel = () => {
               {/* 기간 내 활동 건수 */}
               <div className="bg-white rounded-2xl shadow-sm p-8">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-[20px] font-bold text-gray-800">
-                    기간 내 활동 건수
-                  </h3>
+                  <h3 className="text-[20px] font-bold text-gray-800">기간 내 활동 건수</h3>
                   <button
                     onClick={() => navigate('/system/info/risk-cases')}
                     className="text-red-500 text-sm font-medium hover:text-red-600 transition-colors"
@@ -531,12 +520,8 @@ const MyCounsel = () => {
                     <div key={idx} className="flex items-center gap-3">
                       <span className="text-2xl">{item.icon}</span>
                       <div className="flex-1">
-                        <p className="text-sm text-gray-700 font-medium mb-1">
-                          {item.label}
-                        </p>
-                        <p className="text-2xl font-bold text-blue-600">
-                          {item.count} 건
-                        </p>
+                        <p className="text-sm text-gray-700 font-medium mb-1">{item.label}</p>
+                        <p className="text-2xl font-bold text-blue-600">{item.count} 건</p>
                       </div>
                     </div>
                   ))}
@@ -546,9 +531,7 @@ const MyCounsel = () => {
 
             {/* 내 수익 */}
             <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
-              <h3 className="text-[18px] font-medium text-gray-800 mb-6">
-                내 수익
-              </h3>
+              <h3 className="text-[18px] font-medium text-gray-800 mb-6">내 수익</h3>
               <div className="flex items-start gap-20">
                 {/* 포인트 아이콘 */}
                 <div className="flex-shrink-0">
@@ -560,40 +543,24 @@ const MyCounsel = () => {
                 {/* 수익 정보 */}
                 <div className="flex-1 grid grid-cols-5 gap-6 mt-5">
                   <div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      선택 기간 총 매출액
-                    </p>
-                    <p className="text-xl font-bold text-blue-600">
-                      {revenue[0]?.cnslPriceSum}원
-                    </p>
+                    <p className="text-sm text-gray-600 mb-2">선택 기간 총 매출액</p>
+                    <p className="text-xl font-bold text-blue-600">{revenue[0]?.cnslPriceSum}원</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 mb-2">차감 수수료</p>
-                    <p className="text-xl font-bold text-red-600">
-                      {revenue[0]?.cnslPriceCmsn}원
-                    </p>
+                    <p className="text-xl font-bold text-red-600">{revenue[0]?.cnslPriceCmsn}원</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 mb-2">정산 예정 금액</p>
-                    <p className="text-xl font-bold text-green-600">
-                      {revenue[0]?.cnslExctAmt}원
-                    </p>
+                    <p className="text-xl font-bold text-green-600">{revenue[0]?.cnslExctAmt}원</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      최근 3개월 매출액
-                    </p>
-                    <p className="text-xl font-bold text-gray-800">
-                      {revenue[1]?.cnslPriceSum}원
-                    </p>
+                    <p className="text-sm text-gray-600 mb-2">최근 3개월 매출액</p>
+                    <p className="text-xl font-bold text-gray-800">{revenue[1]?.cnslPriceSum}원</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      가장 많은 상담 유형
-                    </p>
-                    <p className="text-xl font-bold text-gray-800">
-                      {topCnslType?.cnslTpNm || ''}
-                    </p>
+                    <p className="text-sm text-gray-600 mb-2">가장 많은 상담 유형</p>
+                    <p className="text-xl font-bold text-gray-800">{topCnslType?.cnslTpNm || ''}</p>
                   </div>
                 </div>
               </div>
@@ -609,14 +576,8 @@ const MyCounsel = () => {
               <div className="relative h-64">
                 <div className="flex items-end justify-around h-full pb-8">
                   {weeklyData.map((data, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col items-center gap-2 flex-1"
-                    >
-                      <div
-                        className="relative w-full flex items-end justify-center gap-2"
-                        style={{ height: '200px' }}
-                      >
+                    <div key={index} className="flex flex-col items-center gap-2 flex-1">
+                      <div className="relative w-full flex items-end justify-center gap-2" style={{ height: '200px' }}>
                         {/* 예약 건수 */}
                         <div
                           className="bg-cyan-400 rounded-t-lg transition-all duration-500"
@@ -636,9 +597,7 @@ const MyCounsel = () => {
                           }}
                         ></div>
                       </div>
-                      <span className="text-sm font-medium text-gray-600">
-                        {data.day}
-                      </span>
+                      <span className="text-sm font-medium text-gray-600">{data.day}</span>
                     </div>
                   ))}
                 </div>
@@ -659,9 +618,7 @@ const MyCounsel = () => {
           {/* 내 상담 내역 */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-[24px] font-semibold text-gray-800">
-                내 상담 내역
-              </h2>
+              <h2 className="text-[24px] font-semibold text-gray-800">내 상담 내역</h2>
               <button
                 onClick={handleViewAllHistory}
                 className="px-6 py-2 rounded-xl bg-[#2563eb] text-white text-base font-medium hover:bg-[#1d4ed8] transition-colors"
@@ -675,19 +632,11 @@ const MyCounsel = () => {
                   key={item.id}
                   onClick={() => handleViewDetail(item.id)}
                   className={`bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between cursor-pointer hover:shadow-lg transition-all ${
-                    idx === 0
-                      ? 'bg-cyan-50'
-                      : idx === 1
-                        ? 'bg-blue-50'
-                        : idx === 2
-                          ? 'bg-orange-50'
-                          : ''
+                    idx === 0 ? 'bg-cyan-50' : idx === 1 ? 'bg-blue-50' : idx === 2 ? 'bg-orange-50' : ''
                   }`}
                 >
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-gray-800 mb-2">
-                      {item.title}
-                    </h3>
+                    <h3 className="text-base font-medium text-gray-800 mb-2">{item.title}</h3>
                     <div className="flex flex-col gap-2.5 text-sm text-gray-600">
                       <span>상담자 : {item.clientName}</span>
                       <div className="flex justify-between">
@@ -710,10 +659,7 @@ const MyCounsel = () => {
                         </span>
                       </div>
                       <p className="text-sm text-gray-500">
-                        {item.status === '상담 완료'
-                          ? '완료 일시'
-                          : '예약 일시'}{' '}
-                        : {item.date}
+                        {item.status === '상담 완료' ? '완료 일시' : '예약 일시'} : {item.date}
                       </p>
                     </div>
                   </div>
@@ -740,9 +686,7 @@ const MyCounsel = () => {
           {/* 상담 예약 관리 */}
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-[24px] font-semibold text-gray-800">
-                상담 예약 관리
-              </h2>
+              <h2 className="text-[24px] font-semibold text-gray-800">상담 예약 관리</h2>
               <button
                 onClick={handleViewAllReservations}
                 className="px-6 py-2 rounded-xl bg-[#2563eb] text-white text-base font-medium hover:bg-[#1d4ed8] transition-colors"
@@ -758,18 +702,13 @@ const MyCounsel = () => {
                   className="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between cursor-pointer hover:shadow-lg transition-all"
                 >
                   <div className="flex-1">
-                    <h3 className="text-base font-medium text-gray-800 mb-2">
-                      {item.title}
-                    </h3>
+                    <h3 className="text-base font-medium text-gray-800 mb-2">{item.title}</h3>
                     <div className="flex flex-col gap-2.5 text-sm text-gray-600">
                       <span>상담자 : {item.clientName}</span>
                       <span>
-                        상태 :{' '}
-                        <span className="text-[#2563eb]">{item.status}</span>
+                        상태 : <span className="text-[#2563eb]">{item.status}</span>
                       </span>
-                      <p className="text-sm text-gray-500">
-                        예약 일시 : {item.date}
-                      </p>
+                      <p className="text-sm text-gray-500">예약 일시 : {item.date}</p>
                     </div>
                   </div>
                   <button

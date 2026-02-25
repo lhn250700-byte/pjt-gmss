@@ -35,7 +35,7 @@ const Nav = () => {
     );
   } else if (roleName === 'ADMIN') {
     MENUS.push(
-      { label: '대시보드', to: '/admin' },
+      { label: '대시보드', to: '/dashboard' },
       { label: '알림', to: '/alarm' },
       { label: '통계자료', to: '/stats' },
       { label: '마이페이지', to: '/mypage' },

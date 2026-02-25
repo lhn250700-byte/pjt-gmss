@@ -150,7 +150,7 @@ const CounselorDefaultPage = () => {
           <div className="flex items-center justify-between mb-12">
             <div>
               <p className="text-lg text-gray-600 mb-2">
-                안녕하세요 <span className="font-bold text-[#2563eb]">홍길동</span> 상담사님
+                안녕하세요 <span className="font-bold text-[#2563eb]">{nickname}</span> 상담사님.
               </p>
               <h1 className="text-4xl font-bold text-gray-800">마이페이지</h1>
             </div>

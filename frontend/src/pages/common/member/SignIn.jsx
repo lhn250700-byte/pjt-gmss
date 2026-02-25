@@ -49,6 +49,7 @@ const SignIn = () => {
         setTimeout(() => {
           if (res.data.roleNames[0] === 'USER') navigate('/');
           else if (res.data.roleNames[0] === 'SYSTEM') navigate('/system/mypage');
+          else navigate('/alarm');
         }, 1500);
       } else {
         const errorMessage = '로그인에 실패했습니다.';
