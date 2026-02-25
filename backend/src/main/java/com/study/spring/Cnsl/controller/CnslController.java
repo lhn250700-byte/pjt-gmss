@@ -227,7 +227,17 @@ public class CnslController {
 
 	// [정산현황 : 일자별전체 상담사 내역 관련 집계 (최근일, 상담매출액순)]
 	@GetMapping("/api/cnslReg_latestRevenue")
-	public List<CounselorRevenueLatestlyDto> getLatestlyCounselorRevenue() {
-		return cnslService.findLatestlyCounselorRevenue();
+	public ResponseEntity<Page<CounselorRevenueLatestlyDto>> getLatestlyCounselorRevenue(
+			@RequestParam(name="page", defaultValue = "0") int page,
+			@RequestParam(name="size", defaultValue = "5") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<CounselorRevenueLatestlyDto> revenuePage = cnslService.findLatestlyCounselorRevenue(pageable);
+		if (revenuePage.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.ok(revenuePage);
 	}
+	
+	
 }

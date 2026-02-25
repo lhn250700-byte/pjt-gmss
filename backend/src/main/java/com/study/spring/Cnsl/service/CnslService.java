@@ -422,8 +422,8 @@ public class CnslService {
     }
 
     // [정산현황 : 일자별전체 상담사 내역 관련 집계 (최근일, 상담매출액순)]
-    public List<CounselorRevenueLatestlyDto> findLatestlyCounselorRevenue() {
-        return cnslRepository.findLatestlyCounselorRevenue();
+    public Page<CounselorRevenueLatestlyDto> findLatestlyCounselorRevenue(Pageable pageable) {
+        return cnslRepository.findLatestlyCounselorRevenue(pageable);
     }
 
 }

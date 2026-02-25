@@ -130,6 +130,7 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
               on cr.member_id = m.member_id
               where cr.del_yn = 'N'
               and cr.cnsler_Id = :cnslerId
+              and cr.cnsl_stat NOT IN('A', 'X')
     		""", nativeQuery = true)
     Page<cnslListDto> findAllCounselingsByCounselor(Pageable pageable, @Param("cnslerId") String cnslerId);
 
@@ -309,7 +310,7 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
         group by cr.cnsl_dt, cr.cnsler_id, m.nickname
         order by cr.cnsl_dt desc , sum(coalesce(ci.cnsl_price,0)) desc, cr.cnsler_id
     """, nativeQuery = true)
-    List<CounselorRevenueLatestlyDto> findLatestlyCounselorRevenue();
+    Page<CounselorRevenueLatestlyDto> findLatestlyCounselorRevenue(Pageable pageable);
 
     
     @Query(value= """
