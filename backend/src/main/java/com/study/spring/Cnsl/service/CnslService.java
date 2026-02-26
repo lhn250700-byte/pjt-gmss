@@ -114,6 +114,7 @@ public class CnslService {
                 .cnslContent(cnslReqDto.getCnsl_content())
                 .cnslDt(cnslReqDto.getCnsl_date())
                 .cnslStartTime(cnslReqDto.getCnsl_start_time())
+                .cnslEndTime(cnslReqDto.getCnsl_start_time().plusHours(1))
                 .cnslStat("A")
                 .cnslTodoYn("Y")
                 .delYn("N")

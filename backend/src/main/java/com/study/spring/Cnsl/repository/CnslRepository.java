@@ -99,8 +99,8 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
               on cr.member_id = m.member_id
               where cr.del_yn = 'N'
               and cr.cnsler_Id = :cnslerId
-              and (cr.cnsl_stat is null or cr.cnsl_stat = :status
-              ) 
+              and (cr.cnsl_stat is null or cr.cnsl_stat = :status)
+              order by cr.cnsl_dt, cr.cnsl_start_time
             """, nativeQuery = true)
     Page<cnslListDto> findCounselingsByCounselor(@Param("status") String status, Pageable pageable, @Param("cnslerId") String cnslerId);
     
@@ -131,6 +131,16 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
               where cr.del_yn = 'N'
               and cr.cnsler_Id = :cnslerId
               and cr.cnsl_stat NOT IN('A', 'X')
+              ORDER BY
+		      CASE 
+		        WHEN cr.cnsl_stat = 'B' THEN 1
+		        WHEN cr.cnsl_stat = 'C' AND cr.cnsl_todo_yn = 'Y' THEN 2
+		        WHEN cr.cnsl_stat = 'C' AND cr.cnsl_todo_yn != 'Y' THEN 3
+		        WHEN cr.cnsl_stat = 'D' THEN 4
+		        ELSE 5
+		      END,
+		      cr.cnsl_dt,       
+		      cr.cnsl_start_time
     		""", nativeQuery = true)
     Page<cnslListDto> findAllCounselingsByCounselor(Pageable pageable, @Param("cnslerId") String cnslerId);
 
@@ -150,6 +160,7 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
              on cr.member_id = m.member_id
              where cr.del_yn = 'N'
              and cr.cnsl_stat = 'A'
+             order by cr.cnsl_dt, cr.cnsl_start_time
             """, nativeQuery = true)
     Page<cnslListWithoutStatusDto> findPendingReservations(Pageable pageable, @Param("cnslerId") String cnslerId);
 
