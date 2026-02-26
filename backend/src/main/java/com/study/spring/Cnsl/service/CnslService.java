@@ -290,6 +290,11 @@ public class CnslService {
         return cnslRepository.findMostConsultedType(cnslerId, startDate, endDate);
     }
 
+    // [상담 뷰]
+    public CounselDetailDto getCounselDetail(Long cnslId, String email) {
+        return cnslRepository.getCounselDetail(cnslId, email);
+    }
+
 //    // [상담사 월별 상담 건수]
 //    public List<CnslDatePerMonthClassDto> findCounselingMonthlyCountByCounselor(String cnslerId) {
 //        /*
@@ -426,5 +431,4 @@ public class CnslService {
     public Page<CounselorRevenueLatestlyDto> findLatestlyCounselorRevenue(Pageable pageable) {
         return cnslRepository.findLatestlyCounselorRevenue(pageable);
     }
-
 }

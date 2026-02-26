@@ -378,5 +378,29 @@ public interface CnslRepository extends JpaRepository<Cnsl_Reg, Long> {
     """, nativeQuery = true)
     List<CategoryRevenueStatisticsDto> findTypeRevenueStatistics(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
-	
+    @Query(value = """
+        SELECT
+          r.cnsl_dt as cnslDt, 
+          r.cnsl_title,
+          r.cnsl_content,
+          CASE
+              WHEN r.cnsl_stat = 'A' THEN '상담 신청'
+              WHEN r.cnsl_stat = 'B' THEN '상담 예정'
+              WHEN r.cnsl_stat = 'C' THEN '상담 진행 중'
+              WHEN r.cnsl_stat = 'D' THEN '상담 완료'
+              ELSE '!'
+          END AS cnsl_stat_nm,
+          m1.nickname,
+          m2.mbti,
+          get_code_nm('gender', m2.gender) || '성' AS gender,
+          '만 ' || EXTRACT(YEAR FROM age(current_date, m2.birth)) ||'세' AS age,
+          m2.text
+        from cnsl_reg r
+        join member m1 on m1.member_id = r.member_id
+        join member m2 on m2.member_id = r.cnsler_id
+        where m2.member_id = :email
+        and r.cnsl_id = :cnslId
+        order by r.cnsl_id desc
+    """, nativeQuery = true)
+    CounselDetailDto getCounselDetail(@Param("cnslId") Long cnslId, @Param("email") String email);
 }

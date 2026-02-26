@@ -8,12 +8,15 @@ import java.util.Optional;
 
 import com.study.spring.Cnsl.entity.CounselingStatus;
 import com.study.spring.Cnsl.dto.*;
+import com.study.spring.Member.dto.MemberDto;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -119,6 +122,18 @@ public class CnslController {
 		return cnslService.findMostConsultedType(cnslerId, startDate, endDate);
 	}
 
+	// [상담 뷰]
+	@GetMapping("/api/cnslReg_counsels/{cnslId}")
+	public ResponseEntity<?> getCounselDetail(@PathVariable("cnslId") Long cnslId, @AuthenticationPrincipal MemberDto principal) {
+		try {
+			System.out.println("컨트롤러 진입");
+
+			System.out.println("principal = " + principal);
+			return ResponseEntity.ok(cnslService.getCounselDetail(cnslId, principal.getEmail()));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("get counselDetail failure: " + e.getMessage());
+		}
+	}
 
 
 //	// [상담사 월별 상담 건수]

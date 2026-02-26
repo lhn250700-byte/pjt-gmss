@@ -51,18 +51,16 @@
 			});
 
 
-			
-			
-			/*
-			 * http.authorizeHttpRequests(auth -> auth.requestMatchers( "/",
-			 * "/api/member/signup", "/api/member/login", "/api/auth/refresh",
-			 * "/api/auth/signout", "/api/member_InfoNicknameChk", "/api/member/**",
-			 * "/api/auth/**", "/docs", "/swagger-ui/**", "/api-docs/**").permitAll()
-			 * .anyRequest().authenticated());
-			 */
+
+
+/*			 http.authorizeHttpRequests(auth -> auth.requestMatchers( "/",
+			 "/api/member/signup", "/api/member/login", "/api/auth/refresh",
+			 "/api/auth/signout", "/api/member_InfoNicknameChk", "/api/member/**",
+			 "/api/auth/**", "/docs", "/swagger-ui/**", "/api-docs/**").permitAll()
+			 .anyRequest().authenticated());
 
 			// 일반 로그인 필터
-//			http.addFilterBefore(new JWTCheckFilter(), UsernamePasswordAuthenticationFilter.class);
+			http.addFilterBefore(new JWTCheckFilter(), UsernamePasswordAuthenticationFilter.class);*/
 
 			// OAuth2 로그인 설정
 			http.oauth2Login(oauth2 -> oauth2
