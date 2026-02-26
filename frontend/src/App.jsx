@@ -33,7 +33,7 @@ import { refreshAccessToken } from './axios/Auth';
 import { useAuthStore } from './store/auth.store';
 
 const App = () => {
-  const { roleName } = useAuthStore();
+  // const { roleName } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     refreshAccessToken().finally(() => setIsLoading(false));

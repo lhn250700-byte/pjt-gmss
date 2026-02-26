@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import { useAuthStore } from '../../store/auth.store';
 import { getCategoryRevenueStatistics } from '../../api/adminApi';
+import { signOut } from '../../axios/Auth';
 
 // TODO: DB 연동 가이드
 // 이 페이지는 관리자 알림 및 위험 단어 감지를 관리합니다
@@ -59,7 +60,6 @@ import { getCategoryRevenueStatistics } from '../../api/adminApi';
 //    - 브라우저 알림 (Notification API) 연동
 
 const Alarm = () => {
-  const { signOut } = useAuth();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const { nickname, email } = useAuthStore();

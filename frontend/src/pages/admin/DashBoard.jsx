@@ -8,6 +8,7 @@ import {
   getTypeRevenueStatistics,
 } from '../../api/adminApi';
 import { useAuthStore } from '../../store/auth.store';
+import { signOut } from '../../axios/Auth';
 
 // TODO: DB 연동 가이드
 // 이 페이지는 관리자 대시보드로 상담 통계를 표시합니다
@@ -39,7 +40,6 @@ import { useAuthStore } from '../../store/auth.store';
 //    - 위험 단어 감지 시 즉시 알림
 
 const DashBoard = () => {
-  const { signOut } = useAuth();
   const { nickname, email } = useAuthStore();
   const navigate = useNavigate();
   const [periodFilter, setPeriodFilter] = useState('오늘'); // 오늘, 이번 주, 일주일, 이번 달, 1개월, 이번 분기
@@ -48,10 +48,8 @@ const DashBoard = () => {
   const [settlements, setSettlements] = useState([]);
 
   const handleLogout = async () => {
-    const result = await signOut();
-    if (result.success) {
-      navigate('/');
-    }
+    await signOut();
+    navigate('/');
   };
 
   // 날짜 포맷 계산(date -> string) 함수 (날짜 계산 완료 후 사용해야 함)
@@ -411,10 +409,10 @@ const DashBoard = () => {
                   <button
                     key={filter}
                     onClick={() => setPeriodFilter(filter)}
-                    className={`cursor-pointer px-6 py-2.5 rounded-xl text-base font-medium transition-all ${
+                    className={`cursor-pointer px-6 py-2.5 rounded-xl text-base font-medium transition-colors ${
                       periodFilter === filter
-                        ? 'bg-[#2563eb] text-white shadow-lg'
-                        : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-[#2563eb]'
+                        ? 'bg-[#2563eb] text-white shadow-lg border-[#2563eb]'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-[#2563eb]'
                     }`}
                   >
                     {filter}

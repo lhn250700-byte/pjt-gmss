@@ -456,10 +456,10 @@ const MyCounsel = () => {
                   <button
                     key={filter}
                     onClick={() => setPeriodFilter(filter)}
-                    className={`px-6 py-2.5 rounded-xl text-base font-medium transition-all ${
+                    className={`px-6 py-2.5 rounded-xl text-base font-medium transition-colors ${
                       periodFilter === filter
-                        ? 'bg-[#2563eb] text-white shadow-lg'
-                        : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-[#2563eb]'
+                        ? 'bg-[#2563eb] text-white shadow-lg border-[#2563eb]'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-[#2563eb]'
                     }`}
                   >
                     {filter}

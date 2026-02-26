@@ -13,7 +13,7 @@ export const postReservation = async ({
   cnsl_date,
   cnsl_start_time,
 }) => {
-  const { data: cnslId } = await axios.post(`${BASE_URL}/api/reserve`, {
+  const { data: cnslId } = await authApi.post(`/api/cnslReg_create`, {
     cnsl_cate,
     cnsl_tp,
     member_id,
@@ -48,19 +48,15 @@ export const patchReservation = async ({
   cnsl_date,
   cnsl_start_time,
 }) => {
-  const { data: cnslId } = await axios.patch(
-    `${BASE_URL}/api/reserve/${cnsl_id}`,
-    null,
-    {
-      params: {
-        cnsler_id,
-        cnsl_title,
-        cnsl_content,
-        cnsl_date,
-        cnsl_start_time,
-      },
+  const { data: cnslId } = await axios.patch(`${BASE_URL}/api/reserve/${cnsl_id}`, null, {
+    params: {
+      cnsler_id,
+      cnsl_title,
+      cnsl_content,
+      cnsl_date,
+      cnsl_start_time,
     },
-  );
+  });
 
   return cnslId;
 };
@@ -68,5 +64,16 @@ export const patchReservation = async ({
 // 상담 취소
 export const cancelReservation = async () => {
   const { data } = await axios.put(`${BASE_URL}/api/cancel/${cnslId}`);
+  return data;
+};
+
+// 상담사 요금 정보 가져오기
+export const getCnslPriceWithTypeName = async (email) => {
+  const { data } = await authApi.get('/api/cnslInfo_getPrice', {
+    params: {
+      email,
+    },
+  });
+
   return data;
 };
