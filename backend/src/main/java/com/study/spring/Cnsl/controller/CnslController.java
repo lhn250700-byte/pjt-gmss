@@ -201,7 +201,7 @@ public class CnslController {
 
 	// [상담 수락]
 	@PostMapping("/api/cnslReg_approve/{cnslId}")
-	public ResponseEntity<?> approveConsultation(@PathVariable Long cnslId, @RequestBody cnslRespMessageDto message) {
+	public ResponseEntity<?> approveConsultation(@PathVariable("cnslId") Long cnslId, @RequestBody cnslRespMessageDto message) {
 		try {
 			cnslService.approveConsultation(cnslId, message.getMessage());
 			return ResponseEntity.ok().build();
@@ -212,7 +212,7 @@ public class CnslController {
 
 	// [상담 거절]
 	@PostMapping("/api/cnslReg_reject/{cnslId}")
-	public ResponseEntity<?> rejectConsultation(@PathVariable Long cnslId, @RequestBody cnslRespMessageDto message) {
+	public ResponseEntity<?> rejectConsultation(@PathVariable("cnslId") Long cnslId, @RequestBody cnslRespMessageDto message) {
 		try {
 			cnslService.rejectConsultation(cnslId, message.getMessage());
 			return ResponseEntity.ok().build();

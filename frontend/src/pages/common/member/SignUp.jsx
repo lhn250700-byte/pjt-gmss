@@ -26,11 +26,16 @@ const SignUp = () => {
   };
 
   const handleNickname = async () => {
-    const { userInfoNicknameCheckYn: result } = await getmemberInfoNicknameCheckYn(formData.nickname);
-    if (result === 'Y') {
-      alert('해당 닉네임은 이미 등록되어 있습니다. 고유한 닉네임을 입력해주세요.');
-      return;
-    } else alert('사용 가능한 닉네임입니다.');
+    try {
+      const { userInfoNicknameCheckYn: result } = await getmemberInfoNicknameCheckYn(formData.nickname);
+      if (result === 'Y') {
+        alert('해당 닉네임은 이미 등록되어 있습니다. 고유한 닉네임을 입력해주세요.');
+        return;
+      } else alert('사용 가능한 닉네임입니다.');
+    } catch (error) {
+      console.error('nickname duplicate chck error', error.message);
+      alert(error.message);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -70,6 +75,7 @@ const SignUp = () => {
 
     if (result) {
       setIsSuccessOpen(true);
+      navigate('/');
     } else {
       setError('회원가입에 실패했습니다.');
     }

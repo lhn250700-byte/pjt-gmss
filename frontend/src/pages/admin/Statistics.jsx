@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
+import { useAuthStore } from '../../store/auth.store';
+import { signOut } from '../../axios/Auth';
 
 // ============================================================
 // TODO: DB 연동 가이드
@@ -72,16 +74,14 @@ import useAuth from '../../hooks/useAuth';
 // ============================================================
 
 const Statistics = () => {
-  const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { email, nickname } = useAuthStore();
   const [dateRange, setDateRange] = useState('2026-01-19 ~ 2026-01-25');
   const [hoveredSegment, setHoveredSegment] = useState(null);
 
   const handleLogout = async () => {
-    const result = await signOut();
-    if (result.success) {
-      navigate('/');
-    }
+    await signOut();
+    navigate('/');
   };
 
   // ========== 더미 데이터 시작 (DB 연동 시 삭제) ==========
@@ -277,7 +277,7 @@ const Statistics = () => {
         <header className="bg-white px-10 py-5 flex items-center justify-end gap-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
-            <span className="text-lg font-semibold text-gray-700">{user?.email?.split('@')[0] || 'OOO'} 관리자님</span>
+            <span className="text-lg font-semibold text-gray-700">{nickname || ''} 관리자님</span>
           </div>
           <button
             onClick={handleLogout}

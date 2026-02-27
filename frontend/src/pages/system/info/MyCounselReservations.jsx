@@ -40,25 +40,27 @@ const MyCounselHistory = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [counselReservation, setcounselReservation] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
   const itemsPerPage = 10;
   const { email, nickname } = useAuthStore();
 
   useEffect(() => {
     const fetchCounsels = async () => {
       const data = await fetchCounselsBeforeAccept({
-        page: 0,
-        size: 10,
+        page: currentPage - 1,
+        size: itemsPerPage,
         cnslerId: email,
       });
 
+      console.log('=====', currentPage, data, '=====');
+
       setcounselReservation(data.content);
+      setTotalPages(Number(data.totalPages) || 0);
     };
     fetchCounsels();
   }, [currentPage]);
 
-  const totalPages = Math.ceil(counselReservation?.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = counselReservation?.slice(startIndex, startIndex + itemsPerPage);
+  const currentItems = counselReservation;
 
   const getStatusLabel = (status) => {
     if (status === '상담 예약') return { text: status, bg: 'bg-[#2563eb]', color: 'text-[#2563eb]' };
@@ -202,7 +204,7 @@ const MyCounselHistory = () => {
           {/* 상담 내역 리스트 */}
           <div className="space-y-4 mb-8">
             {currentItems?.map((item) => {
-              console.log(item);
+              // console.log(item);
               const statusInfo = getStatusLabel('상담 예약');
               const typeInfo = getCounselTypeLabel(item.counselType);
               return (

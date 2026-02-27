@@ -12,11 +12,7 @@ import { authApi } from '../axios/Auth';
  */
 
 // [기간 내 상담 건수 : 상담 상태별]
-export const fetchConsultationStatusCounts = async ({
-  cnslerId,
-  startDate,
-  endDate,
-}) => {
+export const fetchConsultationStatusCounts = async ({ cnslerId, startDate, endDate }) => {
   try {
     const { data } = await authApi.get('/api/cnslReg_statusStatistics', {
       params: {
@@ -34,11 +30,7 @@ export const fetchConsultationStatusCounts = async ({
 };
 
 // [기간 내 상담 건수 : 카테고리별]
-export const fetchConsultationCategoryCounts = async ({
-  cnslerId,
-  startDate,
-  endDate,
-}) => {
+export const fetchConsultationCategoryCounts = async ({ cnslerId, startDate, endDate }) => {
   try {
     const { data } = await authApi.get('/api/cnslReg_categoryStatistics', {
       params: {
@@ -56,11 +48,7 @@ export const fetchConsultationCategoryCounts = async ({
 };
 
 // [일자별 예약 및 완료 건수 추이]
-export const fetchDailyReservationCompletionTrend = async ({
-  cnslerId,
-  startDate,
-  endDate,
-}) => {
+export const fetchDailyReservationCompletionTrend = async ({ cnslerId, startDate, endDate }) => {
   try {
     const { data } = await authApi.get('/api/cnslReg_dailyStatusStatistics', {
       params: {
@@ -78,11 +66,7 @@ export const fetchDailyReservationCompletionTrend = async ({
 };
 
 // [선택 기간 내 수익, 최근 3달 수익]
-export const fetchMyRevenueSummary = async ({
-  cnslerId,
-  startDate,
-  endDate,
-}) => {
+export const fetchMyRevenueSummary = async ({ cnslerId, startDate, endDate }) => {
   try {
     const { data } = await authApi.get('/api/cnslReg_revenueSummary', {
       params: {
@@ -100,11 +84,7 @@ export const fetchMyRevenueSummary = async ({
 };
 
 // [가장 많은 상담 유형]
-export const fetchMostConsultedType = async ({
-  cnslerId,
-  startDate,
-  endDate,
-}) => {
+export const fetchMostConsultedType = async ({ cnslerId, startDate, endDate }) => {
   try {
     const { data } = await authApi.get('/api/cnslReg_topTypeStatistics', {
       params: {
@@ -194,12 +174,7 @@ export const fetchAllCounsels = async ({ page, size, cnslerId }) => {
 /*
  * 상담 상태에 따른 리스트 가져오기 (상담 수락 = B, 상담 진행 중 = C, 상담 끝 = D)
  */
-export const fetchCounselsByStatus = async ({
-  page,
-  size,
-  status,
-  cnslerId,
-}) => {
+export const fetchCounselsByStatus = async ({ page, size, status, cnslerId }) => {
   try {
     const { data } = await authApi.get(`/api/cnslReg_statusList/${cnslerId}`, {
       params: {
@@ -221,15 +196,12 @@ export const fetchCounselsByStatus = async ({
  */
 export const fetchCounselsBeforeAccept = async ({ page, size, cnslerId }) => {
   try {
-    const { data } = await authApi.get(
-      `/api/cnslReg_pendingReservationList/${cnslerId}`,
-      {
-        params: {
-          page,
-          size,
-        },
+    const { data } = await authApi.get(`/api/cnslReg_pendingReservationList/${cnslerId}`, {
+      params: {
+        page,
+        size,
       },
-    );
+    });
 
     return data;
   } catch (error) {
@@ -261,7 +233,6 @@ export const acceptCounsel = async ({ cnslId, message }) => {
     const response = await authApi.post(`/api/cnslReg_approve/${cnslId}`, {
       message,
     });
-    if (!response.ok) throw new Error('상담 수락 실패');
     console.log('상담 수락:', cnslId);
     return response;
   } catch (error) {
@@ -280,11 +251,10 @@ export const rejectCounsel = async ({ cnslId, reason }) => {
       message: reason,
     });
 
-    if (!response.ok) throw new Error('상담 거절 실패');
     console.log('상담 거절:', cnslId, reason);
     return response;
   } catch (error) {
-    const errorMessage = error.response.data;
+    const errorMessage = error?.response?.data;
     console.error('rejectCounsel error:', errorMessage);
     throw error;
   }
