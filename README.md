@@ -161,3 +161,11 @@ PeerJS 기반 1:1 화상 상담을 제공하며, 상담 중 채팅 기능을 함
 서비스 이용 방법을 안내하는 챗봇을 제공하며, 대화 세션과 요약을 저장합니다.
 
 또한 상담 알림(진행 예정/진행 중)과 연동되어 사용자 경험을 보조합니다.
+
+## 🎥 시연 영상
+
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=bplmEVWA9O0">
+    <img src="https://uosmaiisnppqgxbcbawc.supabase.co/storage/v1/object/public/images/image%205.jpg" alt="고민순삭 시연 영상" width="560"/>
+  </a>
+</div>
